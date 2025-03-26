@@ -12,7 +12,7 @@ contract Robocopcoin is ERC20, Ownable {
         address initialOwner
     ) ERC20("Robocopcoin", "Rbcc") Ownable(initialOwner) {
         _mint(
-            address(0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4),
+            address(initialOwner),
             _totalSupply
         );
     }

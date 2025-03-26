@@ -12,7 +12,7 @@ contract HoleskyNativeCoin is ERC20, Ownable {
         address initialOwner
     ) ERC20("HoleskyNativeCoin", "HoleskyNative") Ownable(initialOwner) {
         _mint(
-            address(0xad5518188e17860f63112e995372D834519426eD),
+            address(initialOwner),
             _totalSupply
         );
     }
