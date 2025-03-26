@@ -1,7 +1,5 @@
 const { ethers, run, network } = require("hardhat");
-// import config from "../config";
 const { sleep } = require("sleep-ts");
-// const hreconfig = require("@nomicfoundations/hardhat-config");
 
 const verify = async (address, parameter = []) => {
   console.log(`Veryfing ${address} ...`);
@@ -51,4 +49,4 @@ main()
   .catch((error) => {
     console.error(error);
     process.exit(1);
-  });
+});
