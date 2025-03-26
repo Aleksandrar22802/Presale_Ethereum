@@ -11,7 +11,7 @@ contract HoleskyRbccCoin is ERC20, Ownable {
 
     constructor(
         address initialOwner
-    ) ERC20("HoleskyRbccCoin", "Rbcc") Ownable(initialOwner) {
+    ) ERC20("HoleskyRbccCoin", "HoleskyRbcc") Ownable(initialOwner) {
         _mint(
             address(initialOwner),
             _totalSupplyWei

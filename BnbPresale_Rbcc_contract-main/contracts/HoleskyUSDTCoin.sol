@@ -11,7 +11,7 @@ contract HoleskyUSDTCoin is ERC20, Ownable {
 
     constructor(
         address initialOwner
-    ) ERC20("HoleskyUSDTCoin", "HoleskyNative") Ownable(initialOwner) {
+    ) ERC20("HoleskyUSDTCoin", "HoleskyUSDT") Ownable(initialOwner) {
         _mint(
             address(initialOwner),
             _totalSupplyWei
