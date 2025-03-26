@@ -29,18 +29,22 @@ contract RbccPresale {
     uint256 private _endTime;
 
     // Ether vs USDT(Ethereum vs HoleskyStable(ex:HoleskyNative))
-    uint256 private _etherPrice;
+    uint256 private _pricePerEther;
 
+    // current this value is 1
     uint256 private _pricePerRbcc; // usdt per token, unit is $
 
-    uint256 private _TotalValue; // max amount of price
-    uint256 private _MaxPerWallet;
-    uint256 private _MinPerWallet;
+    // limit amount for presale
+    uint256 private _limitForPresale; // amount of Rbcc token
+
+    // min, max range for wallet's presale
+    uint256 private _maxRbccPerWallet;
+    uint256 private _minRbccPerWallet;
 
     // presale state before withdraw(must be valid in claim time range)
     uint256 private _totalEther; // total amount of Ether
     uint256 private _totalUSDT; // total amount of USDT
-    uint256 private _totalSold; // total amount of sold
+    uint256 private _totalSold; // soled amount of Rbcc
 
     // total claimed rbccToken count
     uint256 public _totalClaimed; // Total RBCC amount of claimed by users
@@ -81,8 +85,8 @@ contract RbccPresale {
         _endTime = 1743044400; // 2025.3.27:12.0.0
 
         // set Ether price
-        // _etherPrice = 600 * USDT_DECIMAL; // 1ether = 600$
-        _etherPrice = 600; // 1ether = 600$
+        // _pricePerEther = 600 * USDT_DECIMAL; // 1ether = 600$
+        _pricePerEther = 600; // 1ether = 600$
 
         // set total info
         _totalEther = 0;
@@ -91,11 +95,17 @@ contract RbccPresale {
         _totalClaimed = 0;
 
         // _pricePerRbcc = 400; // 0.0004 * USDT_DECIMAL = 0.0004 $
-        _pricePerRbcc = 400 / USDT_DECIMAL; // = 0.0004 $
+        // _pricePerRbcc = 400 / USDT_DECIMAL; // = 0.0004 $
+        // pls ref HoleskyNativeCoin.sol/HoleskyNativeCoin, Robocopcoin.sol/Robocopcoin
+        _pricePerRbcc = 1.0; // = 1.0 $
 
-        _TotalValue = (10 ** 9) * TOKEN_DECIMAL; // 1,000,000,000 Rbcc
-        _MaxPerWallet = 10000 * USDT_DECIMAL; // 10000 $
-        _MinPerWallet = 50 * USDT_DECIMAL; // 50 $
+        // _limitForPresale = (10 ** 9) * TOKEN_DECIMAL; // 1,000,000,000 Rbcc
+        _limitForPresale = (10 ** 9); // 1,000,000,000 Rbcc
+
+        // _maxRbccPerWallet = 10000 * USDT_DECIMAL; // 10000 $
+        // _minRbccPerWallet = 50 * USDT_DECIMAL; // 50 $
+        _maxRbccPerWallet = 10000 / _pricePerRbcc; // amount for 10000 $
+        _minRbccPerWallet = 50 / _pricePerRbcc; // amount for 50 $
     }
 
     /**
@@ -114,8 +124,8 @@ contract RbccPresale {
 
     // This function is able called by Deploying Wallet
     function setEtherPrice(uint256 price) external onlyOwner {
-        // _etherPrice = price * USDT_DECIMAL;
-        _etherPrice = price; // 1ether = price$
+        // _pricePerEther = price * USDT_DECIMAL;
+        _pricePerEther = price; // 1ether = price$
     }
 
     /**
@@ -132,51 +142,66 @@ contract RbccPresale {
 
         uint256 etherAmount = msg.value;
 
-        uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] *
-            _etherPrice) /
-            TOKEN_DECIMAL +
-            _walletsInvestmentUSDT[msg.sender];
-
-        uint256 calcInvestment = currentInvestment +
-            (etherAmount * _etherPrice) /
-            TOKEN_DECIMAL;
+        // uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] *
+        //     _pricePerEther) /
+        //     TOKEN_DECIMAL +
+        //     _walletsInvestmentUSDT[msg.sender];
+        // uint256 calcInvestment = currentInvestment +
+        //     (etherAmount * _pricePerEther) /
+        //     TOKEN_DECIMAL;
+        // require(
+        //     calcInvestment >= _minRbccPerWallet && calcInvestment <= _maxRbccPerWallet,
+        //     "RbccPresale: The price is not allowed for presale."
+        // );
+        uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] * _pricePerEther) + _walletsInvestmentUSDT[msg.sender];
+        uint256 calcInvestment = currentInvestment + (etherAmount * _pricePerEther);
+        uint256 calcInvestmentRbcc = calcInvestment * _pricePerRbcc;
         require(
-            calcInvestment >= _MinPerWallet && calcInvestment <= _MaxPerWallet,
-            "RbccPresale: The price is not allowed for presale."
+            calcInvestmentRbcc >= _minRbccPerWallet && calcInvestmentRbcc <= _maxRbccPerWallet,
+            "RbccPresale: The Ether is overflow for min-max range."
         );
-        uint256 tokenAmount = (etherAmount * _etherPrice) /
-            (_pricePerRbcc * TOKEN_DECIMAL);
+
+        // uint256 tokenAmount = (etherAmount * _pricePerEther) /
+        //     (_pricePerRbcc * TOKEN_DECIMAL);
+        uint256 tokenAmount = (etherAmount * _pricePerEther) / _pricePerRbcc;
+
         _allocateRbcc(etherAmount, 0, tokenAmount);
     }
 
     /**
      * @dev Receive usdt payment for the presale raise
      */
-    function buyTokensWithUSDT(uint256 _usdtAmount) external {
+    function buyTokensWithUSDT(uint256 usdtAmount) external {
         // Check buy time in Claim Time Range
         require(
             block.timestamp >= _startTime && block.timestamp <= _endTime,
             "RbccPresale: Not presale period"
         );
 
-        require(_usdtAmount > 0, "Insufficient USDT amount");
+        require(usdtAmount > 0, "Insufficient USDT amount");
 
-        uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] *
-            _etherPrice) /
-            TOKEN_DECIMAL +
-            _walletsInvestmentUSDT[msg.sender];
-
-        uint256 calcInvestment = currentInvestment + _usdtAmount;
-
+        // uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] *
+        //     _pricePerEther) /
+        //     TOKEN_DECIMAL +
+        //     _walletsInvestmentUSDT[msg.sender];
+        // uint256 calcInvestment = currentInvestment + usdtAmount;
+        // require(
+        //     calcInvestment >= _minRbccPerWallet && calcInvestment <= _maxRbccPerWallet,
+        //     "RbccPresale: The price is not allowed for presale."
+        // );
+        uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] * _pricePerEther)  + _walletsInvestmentUSDT[msg.sender];
+        uint256 calcInvestment = currentInvestment + usdtAmount;
+        uint256 calcInvestmentRbcc = calcInvestment * _pricePerRbcc;
         require(
-            calcInvestment >= _MinPerWallet && calcInvestment <= _MaxPerWallet,
-            "RbccPresale: The price is not allowed for presale."
+            calcInvestmentRbcc >= _minRbccPerWallet && calcInvestmentRbcc <= _maxRbccPerWallet,
+            "RbccPresale: The USDT is overflow for min~max range."
         );
 
-        uint256 tokenAmount = _usdtAmount / _pricePerRbcc;
-        _usdtToken.safeTransferFrom(msg.sender, address(this), _usdtAmount);
+        uint256 tokenAmount = usdtAmount / _pricePerRbcc;
 
-        _allocateRbcc(0, _usdtAmount, tokenAmount);
+        _usdtToken.safeTransferFrom(msg.sender, address(this), usdtAmount);
+
+        _allocateRbcc(0, usdtAmount, tokenAmount);
     }
 
     /**
@@ -186,7 +211,7 @@ contract RbccPresale {
         // Check buy time in Claim Time Range
         require(block.timestamp > _endTime, "Presale is not finished.");
 
-        uint256 srcAmount = (_walletsInvestmentEther[msg.sender] * _etherPrice) /
+        uint256 srcAmount = (_walletsInvestmentEther[msg.sender] * _pricePerEther) /
             TOKEN_DECIMAL +
             _walletsInvestmentUSDT[msg.sender];
         require(srcAmount > 0, "You dont have any RBCC to claim");
@@ -207,7 +232,7 @@ contract RbccPresale {
     }
 
     function getEtherPrice() public view returns (uint256) {
-        return _etherPrice;
+        return _pricePerEther;
     }
     /**
      * @dev Return the rate of Rbcc/USDT from the Presale in Round
@@ -217,28 +242,28 @@ contract RbccPresale {
     }
 
     /**
-     * @dev Return the limited amount from the Presale (as usdt) in Round
+     * @dev Return the limited amount from the Presale (as Rbcc) in Round
      */
-    function getTotalValue() public view returns (uint256) {
-        return _TotalValue;
+    function getLimitForPresale() public view returns (uint256) {
+        return _limitForPresale;
     }
 
     /**
-     * @dev Return the max buy value per wallet (as usdt) in Round
+     * @dev Return the max buy value per wallet (as Rbcc) in Round
      */
-    function getMaxPerWallet() public view returns (uint256) {
-        return _MaxPerWallet;
+    function getMaxRbccPerWallet() public view returns (uint256) {
+        return _maxRbccPerWallet;
     }
 
     /**
-     * @dev Return the min buy value per wallet (as usdt) in Round
+     * @dev Return the min buy value per wallet (as Rbcc) in Round
      */
-    function getMinPerWallet() public view returns (uint256) {
-        return _MinPerWallet;
+    function getMinRbccPerWallet() public view returns (uint256) {
+        return _minRbccPerWallet;
     }
 
     /**
-     * @dev Return the amount Ether raised from the Presale (as usdt) in Round
+     * @dev Return the amount Ether raised from the Presale (as ether) in Round
      */
     function getTotalEther() public view returns (uint256) {
         return _totalEther;
@@ -252,10 +277,11 @@ contract RbccPresale {
     }
 
     /**
-     * @dev Return the amount soled from the Presale (as RBCC) in Round
+     * @dev Return the amount soled from the Presale (as Rbcc) in Round
      */
     function getTotalSold() public view returns (uint256) {
-        return _totalSold * TOKEN_DECIMAL;
+        // return _totalSold * TOKEN_DECIMAL;
+        return _totalSold;
     }
 
     /**
@@ -309,14 +335,13 @@ contract RbccPresale {
 
         emit SoldRbcc(etherAmount, usdtAmount, rbccAmount, _pricePerRbcc);
 
-        _totalSold += rbccAmount;
-
         _walletsInvestmentEther[msg.sender] += etherAmount;
         _walletsInvestmentUSDT[msg.sender] += usdtAmount;
         _walletsRbccAmount[msg.sender] += rbccAmount;
 
         _totalEther += etherAmount;
         _totalUSDT += usdtAmount;
+        _totalSold += rbccAmount;
     }
 
     /**
