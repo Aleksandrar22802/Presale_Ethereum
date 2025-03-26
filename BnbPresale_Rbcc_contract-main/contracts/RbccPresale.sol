@@ -6,18 +6,26 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract RbccPresale {
+    // this type or function is not used in this file
     using SafeERC20 for IERC20;
+
+    IERC20 private _rbccToken; // Holesky Mint Token
+    IERC20 private _usdtToken; // Rbcc Stable Token
+
+    mapping(address => uint256) private _walletsInvestmentEther;
+    mapping(address => uint256) private _walletsInvestmentUsdt;
+    mapping(address => uint256) private _walletsRbccAmount;
+
+    // owner
     address private _owner;
-    IERC20 private _RbccToken;
-    IERC20 private _usdt;
 
-    mapping(address => uint256) private _wallets_investment_usdt;
-    mapping(address => uint256) private _wallets_investment_bnb;
-    mapping(address => uint256) private _wallets_rbcc_amount;
+    // Claim Time Range
+    uint256 private _startTime;
+    uint256 private _endTime;
 
-    uint256 private _Bnb_price;
-    uint256 private _StartTime;
-    uint256 private _EndTime;
+    // Ether vs USDT(Ethereum vs HoleskyStable(ex:HoleskyBNB))
+    uint256 private _etherPrice;
+
     uint256 private _price; // usdt per token
     uint256 private _TotalValue; // max amount of price
     uint256 private _MaxPerWallet;
@@ -43,15 +51,29 @@ contract RbccPresale {
      * @dev Constructing the contract basic informations, containing the RBCC token addr, the ratio price eth:elo
      * and the max authorized eth amount per wallet
      */
-    constructor(address usdt, address token) {
+     /*
+     stableToken : Holesky BNB(Stable Coin)
+     mintToken : Holesky Rbcc(Mint Coin)
+     */
+    constructor(address stableToken, address mintToken) {
+        // check deploying wallet address is being null
         require(msg.sender != address(0), "Deploy from the zero address");
-        _usdt = IERC20(usdt);
-        _RbccToken = IERC20(token);
+        
+        // Create Token Variables
+        _usdtToken = IERC20(stableToken);
+        _rbccToken = IERC20(mintToken);
+        
+        // Set owner
+        // owner must be address of deploying wallet
         _owner = msg.sender;
 
-        _Bnb_price = 600 * USDT_DECIMAL; // 1bnb = 600$
-        _StartTime = 1742958000; // 2025.3.26:12.0.0
-        _EndTime = 1743044400; // 2025.3.27:12.0.0
+        // Init Claim Time Range
+        _startTime = 1742958000; // 2025.3.26:12.0.0
+        _endTime = 1743044400; // 2025.3.27:12.0.0
+
+        // set Ether price
+        _etherPrice = 600 * USDT_DECIMAL; // 1bnb = 600$
+
         _price = 400; // 0.0004 * USDT_DECIMAL = 0.0004 $
         _TotalValue = (10 ** 9) * TOKEN_DECIMAL; // 1,000,000,000 Rbcc
         _MaxPerWallet = 10000 * USDT_DECIMAL; // 10000 $
@@ -70,41 +92,44 @@ contract RbccPresale {
         _;
     }
 
+    // This function is able called by Deploying Wallet
     function setTime(uint256 startTime, uint256 endTime) external onlyOwner {
-        _StartTime = startTime;
-        _EndTime = endTime;
+        _startTime = startTime;
+        _endTime = endTime;
     }
 
-    function setBnbPrice(uint256 price) external onlyOwner {
-        _Bnb_price = price * USDT_DECIMAL;
+    // This function is able called by Deploying Wallet
+    function setEtherPrice(uint256 price) external onlyOwner {
+        _etherPrice = price * USDT_DECIMAL;
     }
 
     /**
      * @dev Receive bnb payment for the presale raise
      */
-    function buyWithBNB() external payable {
+    function buyWithEther() external payable {
+        // Check buy time in Claim Time Range
         require(
-            block.timestamp >= _StartTime && block.timestamp <= _EndTime,
+            block.timestamp >= _startTime && block.timestamp <= _endTime,
             "RbccPresale: Not presale period"
         );
 
-        require(msg.value > 0, "Insufficient BNB amount");
+        require(msg.value > 0, "Insufficient Ether amount");
 
         uint256 bnbAmount = msg.value;
 
-        uint256 currentInvestment = (_wallets_investment_bnb[msg.sender] *
-            _Bnb_price) /
+        uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] *
+            _etherPrice) /
             TOKEN_DECIMAL +
-            _wallets_investment_usdt[msg.sender];
+            _walletsInvestmentUsdt[msg.sender];
 
         uint256 calcInvestment = currentInvestment +
-            (bnbAmount * _Bnb_price) /
+            (bnbAmount * _etherPrice) /
             TOKEN_DECIMAL;
         require(
             calcInvestment >= _MinPerWallet && calcInvestment <= _MaxPerWallet,
             "RbccPresale: The price is not allowed for presale."
         );
-        uint256 tokenAmount = (bnbAmount * _Bnb_price) /
+        uint256 tokenAmount = (bnbAmount * _etherPrice) /
             (_price * TOKEN_DECIMAL);
         _allocateRbcc(bnbAmount, 0, tokenAmount);
     }
@@ -113,17 +138,18 @@ contract RbccPresale {
      * @dev Receive usdt payment for the presale raise
      */
     function buyTokensWithUSDT(uint256 _usdtAmount) external {
+        // Check buy time in Claim Time Range
         require(
-            block.timestamp >= _StartTime && block.timestamp <= _EndTime,
+            block.timestamp >= _startTime && block.timestamp <= _endTime,
             "RbccPresale: Not presale period"
         );
 
         require(_usdtAmount > 0, "Insufficient USDT amount");
 
-        uint256 currentInvestment = (_wallets_investment_bnb[msg.sender] *
-            _Bnb_price) /
+        uint256 currentInvestment = (_walletsInvestmentEther[msg.sender] *
+            _etherPrice) /
             TOKEN_DECIMAL +
-            _wallets_investment_usdt[msg.sender];
+            _walletsInvestmentUsdt[msg.sender];
 
         uint256 calcInvestment = currentInvestment + _usdtAmount;
 
@@ -133,7 +159,7 @@ contract RbccPresale {
         );
 
         uint256 tokenAmount = _usdtAmount / _price;
-        _usdt.safeTransferFrom(msg.sender, address(this), _usdtAmount);
+        _usdtToken.safeTransferFrom(msg.sender, address(this), _usdtAmount);
 
         _allocateRbcc(0, _usdtAmount, tokenAmount);
     }
@@ -142,34 +168,35 @@ contract RbccPresale {
      * @dev Claim the RBCC once the presale is done
      */
     function claimRbcc() public {
-        require(block.timestamp > _EndTime, "Presale is not finished.");
+        // Check buy time in Claim Time Range
+        require(block.timestamp > _endTime, "Presale is not finished.");
 
-        uint256 srcAmount = (_wallets_investment_bnb[msg.sender] * _Bnb_price) /
+        uint256 srcAmount = (_walletsInvestmentEther[msg.sender] * _etherPrice) /
             TOKEN_DECIMAL +
-            _wallets_investment_usdt[msg.sender];
+            _walletsInvestmentUsdt[msg.sender];
         require(srcAmount > 0, "You dont have any RBCC to claim");
 
-        uint256 rbccAmount = _wallets_rbcc_amount[msg.sender];
+        uint256 rbccAmount = _walletsRbccAmount[msg.sender];
         require(
-            _RbccToken.balanceOf(address(this)) >= rbccAmount,
+            _rbccToken.balanceOf(address(this)) >= rbccAmount,
             "The RBCC amount on the contract is insufficient."
         );
 
-        _RbccToken.transfer(msg.sender, rbccAmount * TOKEN_DECIMAL);
+        _rbccToken.transfer(msg.sender, rbccAmount * TOKEN_DECIMAL);
 
         _TotalClaimed += rbccAmount;
-        _wallets_investment_bnb[msg.sender] = 0;
-        _wallets_investment_usdt[msg.sender] = 0;
-        _wallets_rbcc_amount[msg.sender] = 0;
+        _walletsInvestmentEther[msg.sender] = 0;
+        _walletsInvestmentUsdt[msg.sender] = 0;
+        _walletsRbccAmount[msg.sender] = 0;
     }
 
-    function getBnbPrice() public view returns (uint256) {
-        return _Bnb_price;
+    function getEtherPrice() public view returns (uint256) {
+        return _etherPrice;
     }
     /**
      * @dev Return the rate of Elo/Eth from the Presale in Round
      */
-    function getpricePerToken() public view returns (uint256) {
+    function getPricePerToken() public view returns (uint256) {
         return _price;
     }
 
@@ -221,7 +248,7 @@ contract RbccPresale {
     function getAddressInvestmentBNB(
         address addr
     ) public view returns (uint256) {
-        return _wallets_investment_bnb[addr];
+        return _walletsInvestmentEther[addr];
     }
 
     /**
@@ -230,23 +257,25 @@ contract RbccPresale {
     function getAddressInvestmentUSDT(
         address addr
     ) public view returns (uint256) {
-        return _wallets_investment_usdt[addr];
+        return _walletsInvestmentUsdt[addr];
     }
 
     /**
      * @dev Return the total amount of RBCC bought for a specific address
      */
     function getAddressBought(address addr) public view returns (uint256) {
-        return _wallets_rbcc_amount[addr];
+        return _walletsRbccAmount[addr];
     }
 
     /**
      * @dev Return the total amount of RBCC bought for a specific address
      */
     function getRemainingTime() public view returns (uint256) {
-        require(block.timestamp > _StartTime, "Presale is not started.");
-        require(block.timestamp < _EndTime, "Presale was alreay finished.");
-        return _EndTime - block.timestamp;
+        // Check buy time in Claim Time Range
+        require(block.timestamp > _startTime, "Presale is not started.");
+        require(block.timestamp < _endTime, "Presale was alreay finished.");
+
+        return _endTime - block.timestamp;
     }
 
     /**
@@ -258,7 +287,7 @@ contract RbccPresale {
         uint256 rbccAmount
     ) private {
         require(
-            _RbccToken.balanceOf(address(this)) >= rbccAmount + _TotalSold,
+            _rbccToken.balanceOf(address(this)) >= rbccAmount + _TotalSold,
             "The Rbcc amount on the contract is insufficient."
         );
 
@@ -266,9 +295,9 @@ contract RbccPresale {
 
         _TotalSold += rbccAmount;
 
-        _wallets_investment_bnb[msg.sender] += _bnbAmount;
-        _wallets_investment_usdt[msg.sender] += _usdtAmount;
-        _wallets_rbcc_amount[msg.sender] += rbccAmount;
+        _walletsInvestmentEther[msg.sender] += _bnbAmount;
+        _walletsInvestmentUsdt[msg.sender] += _usdtAmount;
+        _walletsRbccAmount[msg.sender] += rbccAmount;
 
         _TotalBNB += _bnbAmount;
         _TotalUSDT += _usdtAmount;
@@ -286,7 +315,7 @@ contract RbccPresale {
      * @dev Authorize the contract owner to withdraw the raised funds from the presale
      */
     function withdrawUSDT() public onlyOwner {
-        _usdt.transfer(msg.sender, _TotalUSDT);
+        _usdtToken.transfer(msg.sender, _TotalUSDT);
         _TotalUSDT = 0;
     }
 
@@ -295,7 +324,7 @@ contract RbccPresale {
      */
     function withdrawRemainingRBCC(uint256 _amount) public onlyOwner {
         require(
-            _RbccToken.balanceOf(address(this)) >= _amount,
+            _rbccToken.balanceOf(address(this)) >= _amount,
             "RBCC amount asked exceed the contract amount"
         );
 
@@ -304,9 +333,9 @@ contract RbccPresale {
         uint256 _totalForUsers = _TotalSold - _TotalClaimed;
 
         require(
-            _RbccToken.balanceOf(address(this)) >= _amount + _totalForUsers,
+            _rbccToken.balanceOf(address(this)) >= _amount + _totalForUsers,
             "RBCC amount asked exceed the amount for users"
         );
-        _RbccToken.transfer(msg.sender, _amount);
+        _rbccToken.transfer(msg.sender, _amount);
     }
 }

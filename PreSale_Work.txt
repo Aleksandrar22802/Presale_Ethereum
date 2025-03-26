@@ -1,0 +1,45 @@
+/%-----------------------------------------------------------------------------------%/
+--- Deply Command ---
+npx hardhat run deploy/deployRbccPresale.js --network  bscTestnet
+
+/&----------------------------------------------------------&/
+HoleskyNativeCoin (HoleskyNa...)
+
+Contract Address = 
+0x9547105772feFA88EA98F70c828E27c8CecD22da
+
+Creater Address = 
+0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4
+
+Verify Command = 
+npx hardhat verify --contract contracts/HoleskyNativeCoin.sol:HoleskyNativeCoin 0x9547105772feFA88EA98F70c828E27c8CecD22da 0xad5518188e17860f63112e995372D834519426eD --network holeskyTestnet 
+
+https://holesky.etherscan.io/address/0x9547105772feFA88EA98F70c828E27c8CecD22da
+
+
+/&----------------------------------------------------------&/
+Robocopcoin (Rbcc)
+
+Contract Address = 
+0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41
+
+Creater Address = 
+0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4
+
+Verify Command = 
+npx hardhat verify --contract contracts/HoleskyNativeCoin.sol:HoleskyNativeCoin 0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41 0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4 --network holeskyTestnet 
+
+https://holesky.etherscan.io/address/0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41
+
+
+/&----------------------------------------------------------&/
+
+PreSale 
+
+Contract Address = 
+####### 0x99E3722624e637F3098514BFdC7C41a7B0C32961
+0xA758A630C8DaE040B82636f5Fc0f05378d431f2d
+
+Creater Address = 
+0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4
+

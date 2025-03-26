@@ -44,7 +44,7 @@ const main = async () => {
   //   "0x98AEdA7aC821D8d9D77dBf482e44FB05837a88Be" // Robocopcoin ADDRESS
   // );
   const RbccPresale = await RbccPresaleContract.deploy(
-    "0x9547105772feFA88EA98F70c828E27c8CecD22da", // BSC USDT ADDRESS
+    "0x9547105772feFA88EA98F70c828E27c8CecD22da", // Holesky USDT ADDRESS
     "0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41" // Robocopcoin ADDRESS
   );
 
