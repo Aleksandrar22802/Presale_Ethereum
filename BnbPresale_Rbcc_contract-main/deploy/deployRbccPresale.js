@@ -27,11 +27,9 @@ const main = async () => {
     let RbccPresaleContract = await ethers.getContractFactory("RbccPresale");
     // let RbccContract = await ethers.getContractFactory("contracts/RbccPresale.sol:Robocopcoin");
 
-    // const RbccPresale = await RbccPresaleContract.deploy(
-    //   "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684", // BSC USDT ADDRESS
-    //   "0x98AEdA7aC821D8d9D77dBf482e44FB05837a88Be" // Robocopcoin ADDRESS
-    // );
+    let wallet2Address = "0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4";
     const RbccPresale = await RbccPresaleContract.deploy(
+        wallet2Address, // Owner ADDRESS
         "0x9547105772feFA88EA98F70c828E27c8CecD22da", // Holesky USDT ADDRESS
         "0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41" // Robocopcoin ADDRESS
     );
@@ -43,10 +41,6 @@ const main = async () => {
 
     let deployedAddress = "";
     deployedAddress = RbccPresale.address.toString();
-    // await verify(deployedAddress, [
-    //   "0x7ef95a0FEE0Dd31b22626fA2e10Ee6A223F8a684",
-    //   "0x98AEdA7aC821D8d9D77dBf482e44FB05837a88Be",
-    // ]);
     await verify(deployedAddress, [
         "0x9547105772feFA88EA98F70c828E27c8CecD22da",
         "0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41",

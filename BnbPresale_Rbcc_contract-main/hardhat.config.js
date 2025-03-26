@@ -29,8 +29,8 @@ const config = {
       url: `https://ethereum-holesky-rpc.publicnode.com`,
       chainId: 17000,
       accounts: [BSC_KEY],
-      gas: 2100000,
-      gasPrice: 8000000000,
+      gas: 100000,
+      gasPrice: 2000000000,
     },
   },
   etherscan: {

@@ -22,10 +22,10 @@ const main = async () => {
     const [owner] = await ethers.getSigners();
     console.log("Signer Address = " + owner.address);
 
-    console.log(owner.address);
+    let wallet1Address = "0xad5518188e17860f63112e995372D834519426eD";
 
     let HoleskyUSDTContract = await ethers.getContractFactory("contracts/HoleskyUSDTCoin.sol:HoleskyUSDTCoin");
-    const HoleskyUSDT = await HoleskyUSDTContract.deploy("0xad5518188e17860f63112e995372D834519426eD");
+    const HoleskyUSDT = await HoleskyUSDTContract.deploy(wallet1Address);
     await HoleskyUSDT.deployed();
     console.log("HoleskyUSDT = ", HoleskyUSDT.address);
 
@@ -33,7 +33,7 @@ const main = async () => {
 
     let deployedAddress = "";
     deployedAddress = HoleskyUSDT.address.toString();
-    await verify(deployedAddress, ["0xad5518188e17860f63112e995372D834519426eD"]);
+    await verify(deployedAddress, [wallet1Address]);
 };
 
 main()

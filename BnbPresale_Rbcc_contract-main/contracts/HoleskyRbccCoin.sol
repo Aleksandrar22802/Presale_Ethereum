@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract HoleskyRbccCoin is ERC20, Ownable {
-    // 1Rbcc = (10 ** 14)Wei
-    uint256 private _totalSupplyWei = 3000000000 * (10 ** 14);
+    // 1Rbcc = (10 ** 8)Wei
+    uint256 private _totalSupplyWei = 30000 * (10 ** 8);
 
     constructor(
         address initialOwner
@@ -19,6 +19,6 @@ contract HoleskyRbccCoin is ERC20, Ownable {
     }
 
     function decimals() override public view virtual returns (uint8) {
-        return 14;
+        return 8;
     }
 }
