@@ -12,6 +12,10 @@ import { getPresaleContract } from "../contracts";
 import USDTAbi from "../assets/abi/usdtTokenABI.json"
 import PresaleContract from "../contracts/presale"
 
+import IconEther from "../assets/icons/lp-CAL_ETH.png"
+import IconUSDT from "../assets/icons/lp-caUSD_USDC.png"
+import IconRbcc from "../assets/icons/token-LSDoge.png"
+
 import "react-sweet-progress/lib/style.css";
 
 function Presale() {
@@ -411,6 +415,16 @@ function Presale() {
         setSaleCryptoAmount(parseFloat(val));
     }
 
+    const onClickCurrencyETH = () => {
+        document.getElementById("mint_currency_button_usdt").classList.remove("selected");
+        document.getElementById("mint_currency_button_eth").classList.add("selected");
+    }
+
+    const onClickCurrencyUSDT = () => {
+        document.getElementById("mint_currency_button_usdt").classList.add("selected");
+        document.getElementById("mint_currency_button_eth").classList.remove("selected");
+    }
+
     return (
         <>
             <div className="mint_container">
@@ -453,7 +467,58 @@ function Presale() {
                         <div className="mint_content">
                             <div className="mint_state text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
                             <CountDown end={counterDeadline} />
-                            {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
+                            <div className="mint_currency_select">
+                                <button 
+                                    id="mint_currency_button_eth"
+                                    className="currency_type"
+                                    onClick={onClickCurrencyETH}
+                                >
+                                    <img src={IconEther} />
+                                    <span>ETH</span>
+                                </button>
+                                <button 
+                                    id="mint_currency_button_usdt"
+                                    className="mint_currency_button currency_type"
+                                    onClick={onClickCurrencyUSDT}
+                                >
+                                    <img src={IconUSDT} />
+                                    <span>USDT</span>
+                                </button>
+                            </div>
+
+                            <div className="mint_currency_panel">
+                                <div className="mint_currency_pay">
+                                    <span>
+                                        USDT you pay
+                                    </span>
+                                    <input type="text">
+                                    </input>
+                                </div>
+                                <div className="mint_currency_receive">
+                                    <span className="title">
+                                        Rbcc you receive
+                                    </span>
+                                    <div className="content">
+                                        <span>10</span>
+                                        <img src={IconRbcc} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mint_currency_action">
+                                <button 
+                                    // onClick={onClickCurrencyUSDT}
+                                >
+                                    <span>Buy</span>
+                                </button>
+                                <button 
+                                    // onClick={onClickCurrencyUSDT}
+                                >
+                                    <span>Claim</span>
+                                </button>
+                            </div>
+
+                            {/* {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
                                 <section className="">
                                     <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
                                         <div className="flex items-center justify-between">
@@ -509,7 +574,7 @@ function Presale() {
                                     {pendingTx && <div className="presale-loader"></div>}
                                     {preSaleActionText[preSaleState]}
                                 </button>
-                            </section>
+                            </section> */}
                         </div>
                     </div>
                 </div>
