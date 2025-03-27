@@ -8,15 +8,18 @@
     background-color: #212121 !important;
 
     // border-style: solid !important;
-    // border-width: 10px;
+    // border-width: 2px;
     // border-color: red !important;
+
+    padding-left: 20px !important;
+    padding-right: 20px !important;
 
     .logo {
       // border-style: solid !important;
       // border-width: 10px;
       // border-color: red !important;
       span {
-        font-size: 2vw;
+        font-size: 32px;
         font-weight: bold;
         color: rgb(249, 255, 56);
       }
@@ -47,20 +50,20 @@
         // font-family: 'Microsoft YaHei UI Light';
 
         background-color: rgb(249, 255, 56);
-        border-radius: 0.5vh;
+        border-radius: 10px;
 
         background-image: linear-gradient(to right, rgb(199, 156, 13), rgb(20, 184, 170));
 
-        width: 12vw !important;
-        height: 5.4vh !important;
+        width: 180px !important;
+        height: 50px !important;
 
         color: white;
-        font-size: 1.0vw;
+        font-size: 18px;
         font-weight: bold;
         text-align: center;        
         display: flex;
         &:hover {
-          font-size: 1.1vw !important;
+          font-size: 20px !important;
         }
       }
 
@@ -118,7 +121,7 @@
       right: 145px;
     }
     .main-account-menu {
-      top: 72px;
+      top: 60px;
       right: 20px;
     }
   }

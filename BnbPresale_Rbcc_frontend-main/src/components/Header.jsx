@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAccount, useNetwork, useSwitchNetwork, useDisconnect, useBalance } from "wagmi";
 
 import { Divider } from "@mui/material";
-import { CheckCircle, Login, Logout } from "@mui/icons-material";
+import { CheckCircle, Login, Logout, ArrowDownward } from "@mui/icons-material";
 
 import { useAuthState } from "../context/AuthContext";
 import { useResponsiveView } from "../utils/customHooks"
@@ -100,7 +100,7 @@ function Header(props) {
     }
 
     return (
-        <header className={`header ${authState.preferDark ? "dark-theme" : ""} flex items-center py-2 px-4 md:px-20  mx-auto gap-2`}>
+        <header className={`header ${authState.preferDark ? "dark-theme" : ""} flex items-center `}>
             <div className="logo flex-grow" onClick={() => { navigate('/') }}>
                 <Link to="/home" className="flex items-center gap-2 text-[#add8e6]">
                     <img 
@@ -151,12 +151,14 @@ function Header(props) {
                 {connectedWalletAddress != undefined ? (
                     <button className="primary-btn flex items-center" onClick={handleAccountClick}>
                         <span className="text-center">{getFormattedDisplayAddress(address)}</span>
-                        <ArrowDown color="white" />
+                        {/* <ArrowDown color="white" /> */}
+                        <ArrowDownward />
                     </button>
                 ) : (
                     <button className="primary-btn text-center" onClick={handleWalletOpen}>
                         <span className="text-center">Connect</span>
-                        <ArrowDown color="white" />
+                        {/* <ArrowDown color="white" /> */}
+                        <Login />
                     </button>
                 )}
             </div>
