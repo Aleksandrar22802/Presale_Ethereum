@@ -24,18 +24,19 @@ const main = async () => {
     const [owner] = await ethers.getSigners();
     console.log("Signer Address = " + owner.address);
 
-    let RbccPresaleContract = await ethers.getContractFactory("RbccPresale");
-    // let RbccContract = await ethers.getContractFactory("contracts/RbccPresale.sol:Robocopcoin");
+    let RbccPresaleContract = await ethers.getContractFactory("HoleskyRbccPresale");
 
     let wallet2Address = "0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4";
+    let rbccTokenOwner = wallet2Address;
     const RbccPresale = await RbccPresaleContract.deploy(
         wallet2Address, // Owner ADDRESS
         "0x9547105772feFA88EA98F70c828E27c8CecD22da", // Holesky USDT ADDRESS
-        "0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41" // Robocopcoin ADDRESS
+        "0x56D8818F71Ae3A14Ca655a8250186C44C13E9b41", // Robocopcoin ADDRESS
+        wallet2Address,
     );
 
     await RbccPresale.deployed();
-    console.log("RbccPresale:", RbccPresale.address);
+    console.log("RbccPresale = ", RbccPresale.address);
 
     await sleep(10000);
 
