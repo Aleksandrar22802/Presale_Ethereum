@@ -4,750 +4,298 @@ const CALPresaleContract = {
 		// 1: "0x318ceec1819e0d2a0eb922b3d510f923005fd2a9",
 		56: '0x799de9896C3DC074F8b05F3B610178D06E1f90B0',
 		97: '0x02e09ECFc5e3Aa7dA3F3b5bABBb363b2713e6211',
-		17000: '0xA758A630C8DaE040B82636f5Fc0f05378d431f2d',
+		17000: '0x448d908920C676D3Db99fc3FEc5865E2EB829C34',
 	},
 	abi: [
 		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "usdt",
-			"type": "address"
-			},
-			{
-			"internalType": "address",
-			"name": "token",
-			"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "target",
-			"type": "address"
-			}
-		],
-		"name": "AddressEmptyCode",
-		"type": "error"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "account",
-			"type": "address"
-			}
-		],
-		"name": "AddressInsufficientBalance",
-		"type": "error"
-		},
-		{
-		"inputs": [],
-		"name": "FailedInnerCall",
-		"type": "error"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "token",
-			"type": "address"
-			}
-		],
-		"name": "SafeERC20FailedOperation",
-		"type": "error"
-		},
-		{
-		"anonymous": false,
-		"inputs": [
-			{
-			"indexed": false,
-			"internalType": "uint256",
-			"name": "bnbAmount",
-			"type": "uint256"
-			},
-			{
-			"indexed": false,
-			"internalType": "uint256",
-			"name": "usdtAmount",
-			"type": "uint256"
-			},
-			{
-			"indexed": false,
-			"internalType": "uint256",
-			"name": "price",
-			"type": "uint256"
-			},
-			{
-			"indexed": false,
-			"internalType": "uint256",
-			"name": "rbccAmount",
-			"type": "uint256"
-			}
-		],
-		"name": "SoldRbcc",
-		"type": "event"
-		},
-		{
-		"anonymous": false,
-		"inputs": [],
-		"name": "StateChange",
-		"type": "event"
-		},
-		{
-		"inputs": [],
-		"name": "_TotalClaimed",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "uint256",
-			"name": "_usdtAmount",
-			"type": "uint256"
-			}
-		],
-		"name": "buyTokensWithUSDT",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "buyWithBNB",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "claimRbcc",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "addr",
-			"type": "address"
-			}
-		],
-		"name": "getAddressBought",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "addr",
-			"type": "address"
-			}
-		],
-		"name": "getAddressInvestmentBNB",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "address",
-			"name": "addr",
-			"type": "address"
-			}
-		],
-		"name": "getAddressInvestmentUSDT",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getBnbPrice",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getMaxPerWallet",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getMinPerWallet",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getRemainingTime",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getTotalBNB",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getTotalSold",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getTotalUSDT",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getTotalValue",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "getpricePerToken",
-		"outputs": [
-			{
-			"internalType": "uint256",
-			"name": "",
-			"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "uint256",
-			"name": "price",
-			"type": "uint256"
-			}
-		],
-		"name": "setBnbPrice",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "uint256",
-			"name": "startTime",
-			"type": "uint256"
-			},
-			{
-			"internalType": "uint256",
-			"name": "endTime",
-			"type": "uint256"
-			}
-		],
-		"name": "setTime",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "withdrawBNB",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		},
-		{
-		"inputs": [
-			{
-			"internalType": "uint256",
-			"name": "_amount",
-			"type": "uint256"
-			}
-		],
-		"name": "withdrawRemainingRBCC",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		},
-		{
-		"inputs": [],
-		"name": "withdrawUSDT",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-		}
-		/*
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'usdt',
-					type: 'address',
-				},
-				{
-					internalType: 'address',
-					name: 'token',
-					type: 'address',
-				},
+			"inputs": [
+			  {
+				"internalType": "address",
+				"name": "initialOwner",
+				"type": "address"
+			  },
+			  {
+				"internalType": "address",
+				"name": "stableToken",
+				"type": "address"
+			  },
+			  {
+				"internalType": "address",
+				"name": "mintToken",
+				"type": "address"
+			  },
+			  {
+				"internalType": "address",
+				"name": "mintTokenOwner",
+				"type": "address"
+			  }
 			],
-			stateMutability: 'nonpayable',
-			type: 'constructor',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'target',
-					type: 'address',
-				},
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		  },
+		  {
+			"anonymous": false,
+			"inputs": [
+			  {
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "etherAmount",
+				"type": "uint256"
+			  },
+			  {
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "usdtAmount",
+				"type": "uint256"
+			  },
+			  {
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "rbccAmount",
+				"type": "uint256"
+			  },
+			  {
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "pricePerRbcc",
+				"type": "uint256"
+			  }
 			],
-			name: 'AddressEmptyCode',
-			type: 'error',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'account',
-					type: 'address',
-				},
+			"name": "SoldRbcc",
+			"type": "event"
+		  },
+		  {
+			"anonymous": false,
+			"inputs": [],
+			"name": "StateChange",
+			"type": "event"
+		  },
+		  {
+			"inputs": [],
+			"name": "_totalClaimed",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			name: 'AddressInsufficientBalance',
-			type: 'error',
-		},
-		{
-			inputs: [],
-			name: 'FailedInnerCall',
-			type: 'error',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'token',
-					type: 'address',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "buyTokensWithUSDT",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "buyWithEther",
+			"outputs": [],
+			"stateMutability": "payable",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "claimRbcc",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		  },
+		  {
+			"inputs": [
+			  {
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			  }
 			],
-			name: 'SafeERC20FailedOperation',
-			type: 'error',
-		},
-		{
-			anonymous: false,
-			inputs: [
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'bnbAmount',
-					type: 'uint256',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'usdtAmount',
-					type: 'uint256',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'price',
-					type: 'uint256',
-				},
-				{
-					indexed: false,
-					internalType: 'uint256',
-					name: 'rbccAmount',
-					type: 'uint256',
-				},
+			"name": "getAddressBought",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			name: 'SoldRbcc',
-			type: 'event',
-		},
-		{
-			anonymous: false,
-			inputs: [],
-			name: 'StateChange',
-			type: 'event',
-		},
-		{
-			inputs: [],
-			name: '_TotalClaimed',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [
+			  {
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: '_claim',
-			outputs: [
-				{
-					internalType: 'bool',
-					name: '',
-					type: 'bool',
-				},
+			"name": "getAddressInvestmentEther",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'uint256',
-					name: '_usdtAmount',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [
+			  {
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			  }
 			],
-			name: 'buyTokensWithUSDT',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'buyWithBNB',
-			outputs: [],
-			stateMutability: 'payable',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'claimRbcc',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'addr',
-					type: 'address',
-				},
+			"name": "getAddressInvestmentUSDT",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			name: 'getAddressBought',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getEtherPrice",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'addr',
-					type: 'address',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getLimitForPresale",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			name: 'getAddressInvestmentBNB',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getMaxRbccPerWallet",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'address',
-					name: 'addr',
-					type: 'address',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getMinRbccPerWallet",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			name: 'getAddressInvestmentUSDT',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getRemainingTime",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getBnbPrice',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getTotalEther",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getMaxPerWallet',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getTotalSold",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getMinPerWallet',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [],
+			"name": "getTotalUSDT",
+			"outputs": [
+			  {
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getRemainingTime',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"stateMutability": "view",
+			"type": "function"
+		  },
+		  {
+			"inputs": [
+			  {
+				"internalType": "uint256",
+				"name": "price",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getTotalBNB',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
+			"name": "setEtherPrice",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		  },
+		  {
+			"inputs": [
+			  {
+				"internalType": "uint256",
+				"name": "startTime",
+				"type": "uint256"
+			  },
+			  {
+				"internalType": "uint256",
+				"name": "endTime",
+				"type": "uint256"
+			  }
 			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getTotalSold',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getTotalUSDT',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getTotalValue',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'getpricePerToken',
-			outputs: [
-				{
-					internalType: 'uint256',
-					name: '',
-					type: 'uint256',
-				},
-			],
-			stateMutability: 'view',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'uint256',
-					name: 'price',
-					type: 'uint256',
-				},
-			],
-			name: 'setBnbPrice',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'uint256',
-					name: 'startTime',
-					type: 'uint256',
-				},
-				{
-					internalType: 'uint256',
-					name: 'endTime',
-					type: 'uint256',
-				},
-			],
-			name: 'setTime',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'withdrawBNB',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		{
-			inputs: [
-				{
-					internalType: 'uint256',
-					name: '_amount',
-					type: 'uint256',
-				},
-			],
-			name: 'withdrawRemainingRBCC',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		{
-			inputs: [],
-			name: 'withdrawUSDT',
-			outputs: [],
-			stateMutability: 'nonpayable',
-			type: 'function',
-		},
-		*/
+			"name": "setTime",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		  }
 	],
 };
 

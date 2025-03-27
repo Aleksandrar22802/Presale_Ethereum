@@ -70,7 +70,7 @@ contract HoleskyRbccPresale {
         
         // Init Claim Time Range
         _startTime = 1742958000; // 2025.3.26:12.0.0
-        _endTime = 1743044400; // 2025.3.27:12.0.0
+        _endTime = 1743130861; // 2025.3.28:12.0.0
 
         // set total info
         _totalEther = 0;

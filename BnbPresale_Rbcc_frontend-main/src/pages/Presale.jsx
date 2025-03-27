@@ -22,7 +22,7 @@ function Presale()
     const chainId = useChainId()
     console.log("chainId = ", chainId);
 
-    const { data: accountBalance } = useBalance({ address, watch: true })
+    // const { data: accountBalance } = useBalance({ address, watch: true })
     // const [startTime, setStartTime] = useState(0);
     // const [endTime, setEndTime] = useState(0);
     const [softCap, setSoftCap] = useState(0);
@@ -51,16 +51,36 @@ function Presale()
     const [usdtBalance, setUsdtBalance] = useState(0);
     const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
     
-    const ETHER_DECIMAL = "1000000000000000000";
-    const USDT_DECIMAL = "1000000";
-    const RBCC_DECIMAL = "100000000";
+    const ETHER_DECIMAL = 1000000000000000000;
+    const USDT_DECIMAL = 1000000;
+    const RBCC_DECIMAL = 100000000;
+	const USDT_PER_ETHER = 2000;
+	const USDT_PER_RBCC = 10;
 
     const web3 = new Web3(window.ethereum)
 
-    const usdtToken = "0x9547105772feFA88EA98F70c828E27c8CecD22da";
+    const usdtToken = "0xFdf8062Ad4D57F1539D122231A2b189cfc58a955";
     const usdtContract = new web3.eth.Contract(USDTAbi, usdtToken);
     
-    const [cryptoChange, setCryptoChange] = useState(0);
+    const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
+    const [buyRbccAmount, setBuyRbccAmount] = useState(0);
+
+    useEffect(() => {
+		let cryptoAmount = saleCryptoAmount;
+		if (currencies[currencyState] == ethereumConstant) 
+		{
+			// ETHER => USDT
+			cryptoAmount = cryptoAmount * USDT_PER_ETHER;
+			// USDT => RBCC
+			cryptoAmount = cryptoAmount / USDT_PER_RBCC;
+		}
+		else
+		{
+			// USDT => RBCC
+			cryptoAmount = cryptoAmount / USDT_PER_RBCC;
+		}
+		setBuyRbccAmount(cryptoAmount);
+	}, [saleCryptoAmount])
 
 	const PreSaleStateVal = {
         NotOpened: 0,
@@ -96,15 +116,15 @@ function Presale()
         ]
     })
 
-    const { data: boughtResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getAddressBought",
-                args: [address],
-            },
-        ]
-    })
+	const { data: boughtResult } = useContractReads({
+		contracts: [
+			{
+				...getPresaleContract(chainId),
+				functionName: "getAddressBought",
+				args: address != undefined ? [address] : [],
+			},
+		]
+	})
 
     useEffect(() => {
         if (!remainingTimeResult) return
@@ -193,9 +213,13 @@ function Presale()
     })
 
     const fetchUsdtBalance = async () => {
+		if (address == undefined) return;
         try {
-            const balance = await usdtContract.methods.balanceOf(address).call();
-            setUsdtBalance(web3.utils.fromWei(balance, 'mwei') / USDT_DECIMAL);
+            let balance = await usdtContract.methods.balanceOf(address).call();
+			console.log("balance = " + balance);
+			balance = Number(balance) / Number(USDT_DECIMAL);
+			console.log("balance = " + balance);
+            setUsdtBalance(balance);
         } catch (error) {
             console.error("Error fetching USDT balance:", error);
             setUsdtBalance(0);
@@ -203,9 +227,13 @@ function Presale()
     };
 
     const fetchEthereumBalance = async () => { // New function to fetch Ethereum balance
+		if (address == undefined) return;
         try {
-            const balance = await web3.eth.getBalance(address);
-            setEthereumBalance(web3.utils.fromWei(balance, 'ether') / ETHER_DECIMAL);
+            let balance = await web3.eth.getBalance(address);
+			console.log("balance = " + balance);
+			balance = Number(balance) / Number(ETHER_DECIMAL);
+			console.log("balance = " + balance);
+            setEthereumBalance(balance);
         } catch (error) {
             console.error("Error fetching Ethereum balance:", error);
             setEthereumBalance(0);
@@ -228,12 +256,12 @@ function Presale()
         if (currencies[idx] === usdtConstant) 
         {
             await fetchUsdtBalance();
-            setCryptoChange(usdtBalance)
+            setSaleCryptoAmount(usdtBalance)
         }
         if (currencies[idx] === ethereumConstant) 
         {
             await fetchEthereumBalance();
-            setCryptoChange(ethereumBalance)
+            setSaleCryptoAmount(ethereumBalance)
         }
     }
 
@@ -248,25 +276,26 @@ function Presale()
     // })
 
     const handleAction = async () => {
+		if (address == undefined) return;
         if (preSaleState == PreSaleStateVal.Open) 
         {
 			/*
             if (currencies[currencyState] == usdtConstant) 
             {
-                if (cryptoChange < 50) {
+                if (saleCryptoAmount < 50) {
                     toast.success("Minimum order amount is $50!");
                     return;
                 }
             } 
             else 
             {
-                if (cryptoChange < (50 / 2057)) {
+                if (saleCryptoAmount < (50 / 2057)) {
                     toast.success("Minimum order amount is $50!")
                     return;
                 }
             }
 			*/
-            let transferVal = parseFloat(cryptoChange);
+            let transferVal = parseFloat(saleCryptoAmount);
             if (!transferVal) return;
 
 			setPendingTx(true);
@@ -274,7 +303,7 @@ function Presale()
             let presaleContractAddress = PresaleContract.address[chainId];
             if (currencies[currencyState] == ethereumConstant) 
             {
-                const weiValue = BigNumber(cryptoChange).multipliedBy(ETHER_DECIMAL);
+                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL);
                 web3.eth.methods.transfer(presaleContractAddress, weiValue);                
                 buyWithEther({
                     args: [],
@@ -284,7 +313,7 @@ function Presale()
             }
             else 
             {
-                const weiValue = BigNumber(cryptoChange).multipliedBy(USDT_DECIMAL);
+                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL);
                 await usdtContract.methods.transfer(presaleContractAddress, weiValue);
                 buyTokensWithUSDT({
                     args: [],
@@ -327,7 +356,7 @@ function Presale()
     }
 
     const setInputMax = () => {
-        setCryptoChange(currencies[currencyState] == ethereumConstant ? ethereumBalance : usdtBalance)
+        setSaleCryptoAmount(currencies[currencyState] == ethereumConstant ? ethereumBalance : usdtBalance)
     }
 
     const changeValue = (e) => {
@@ -348,7 +377,7 @@ function Presale()
             }
         }
 
-		setCryptoChange(parseFloat(val));
+		setSaleCryptoAmount(parseFloat(val));
     }
 
     return (
@@ -409,7 +438,7 @@ function Presale()
                         placeholder="0.00"
                         className="h-full w-full mt-[25px] md:mt-[20px] text-[30px] md:text-[26px] pr-[20px] bg-transparent"
                         // ref={refAmount}
-                        value={cryptoChange}
+                        value={saleCryptoAmount}
                         onChange={changeValue}
                         disabled={preSaleState != PreSaleStateVal.Open}
                       />
@@ -419,7 +448,7 @@ function Presale()
                           <div className="flex flex-col right-[-1px] absolute top-[105%] w-[auto] z-5 block h-[auto] bg-[#212121] mt-2 border-[1px] rounded-b-xl overflow-hidden">
                             {currencies.map((currency, idx) => {
                               return (
-                                <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)}  >{currency}</div>
+                                <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)} key={idx} >{currency}</div>
                               )
                             })}
                           </div>
@@ -428,10 +457,10 @@ function Presale()
                     </div>
                   </div>
                 </section>
-                {cryptoChange !== 0 && !isNaN(cryptoChange) && (
+                {saleCryptoAmount !== 0 && !isNaN(saleCryptoAmount) && (
                   <div className="flex items-center justify-center">
                     <span className="mt-5">
-                      You will be able to claim {currencies[currencyState] !== "USDT" ? (cryptoChange * 2057 / token_price) : (cryptoChange / token_price)} Robocopcoin
+                      You will be able to claim {buyRbccAmount} Robocopcoin
                     </span>
                   </div>
                 )}
