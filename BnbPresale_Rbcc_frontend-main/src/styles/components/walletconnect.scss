@@ -7,7 +7,18 @@
   font-weight: 700;
   z-index: 1005;
 
+  // border-style: solid !important;
+  // border-width: 1px;
+  // border-color: red !important;
+
   .item {
+
+    &:hover {
+      border-style: solid !important;
+      border-width: 1px;
+      border-color: rgb(65, 233, 14) !important;
+    }
+  
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -20,17 +31,27 @@
       background: getColor(walletBg1);
       border-radius: 20px 0 0 20px;
       .label {color: #F6851B;}
+
+      &:hover {
+        background: getColor(walletBg1_hover);
+      }
     }
     
     &.wallet {
       background: getColor(walletBg2);
       .label{color: #3B99FC;}
+      &:hover {
+        background: getColor(walletBg2_hover);
+      }
     }
     
     &.base {
       background: getColor(walletBg3);
       border-radius: 0 20px 20px 0;
       .label{color: #0051FF;}
+      &:hover {
+        background: getColor(walletBg3_hover);
+      }
     }
 
     .icon {

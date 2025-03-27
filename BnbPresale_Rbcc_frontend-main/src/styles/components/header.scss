@@ -1,8 +1,26 @@
   .header {
     position: relative;
-    max-width: 1360px;
+    // max-width: 1360px;
     z-index: 1002;
     width: 100%;
+
+    color: white !important;
+    background-color: #212121 !important;
+
+    // border-style: solid !important;
+    // border-width: 10px;
+    // border-color: red !important;
+
+    .logo {
+      // border-style: solid !important;
+      // border-width: 10px;
+      // border-color: red !important;
+      span {
+        font-size: 2vw;
+        font-weight: bold;
+        color: rgb(249, 255, 56);
+      }
+    }
 
     .main-menu {
       font-size: 14px;
@@ -18,29 +36,62 @@
       }
     }
 
-    .buttons {
-      .btn-mainnet {
-        min-width: 150px;
-        height: 40px;
-        border-radius: 12px;
-        padding: 10px 8px 10px 14px;
-        background-color: #393939;
-        font-size: 14px;
-        font-weight: 600;
-        color: #fff;
-        justify-content: space-between;
-        svg {
-          fill: getColor(base);
+    .connection-pane {
+      // border-style: solid !important;
+      // border-width: 1px;
+      // border-color: red !important;
+
+
+      button {
+        // font-family: 'Times New Roman', Times, serif;
+        // font-family: 'Microsoft YaHei UI Light';
+
+        background-color: rgb(249, 255, 56);
+        border-radius: 0.5vh;
+
+        background-image: linear-gradient(to right, rgb(199, 156, 13), rgb(20, 184, 170));
+
+        width: 12vw !important;
+        height: 5.4vh !important;
+
+        color: white;
+        font-size: 1.0vw;
+        font-weight: bold;
+        text-align: center;        
+        display: flex;
+        &:hover {
+          font-size: 1.1vw !important;
         }
       }
 
-      .btn-mainnet:disabled {
-        color: #8d8585
-      }
+
+      // .btn-mainnet {
+      //   min-width: 150px;
+      //   height: 40px;
+      //   border-radius: 12px;
+      //   padding: 10px 8px 10px 14px;
+      //   background-color: #393939;
+      //   font-size: 14px;
+      //   font-weight: 600;
+      //   color: #fff;
+      //   justify-content: space-between;
+      //   svg {
+      //     fill: getColor(base);
+      //   }
+      // }
+
+      // .btn-mainnet:disabled {
+      //   color: #8d8585
+      // }
     }
 
     .main-network-menu,
     .main-account-menu {
+
+      // border-style: solid !important;
+      // border-width: 1px;
+      // border-color: red !important;
+
       z-index: 1235;
       position: absolute;
       background-color: getColor(dialogBgColor);
