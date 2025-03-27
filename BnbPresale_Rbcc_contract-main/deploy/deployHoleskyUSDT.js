@@ -29,11 +29,13 @@ const main = async () => {
     await HoleskyUSDT.deployed();
     console.log("HoleskyUSDT = ", HoleskyUSDT.address);
 
+    /*
     await sleep(10000);
 
     let deployedAddress = "";
     deployedAddress = HoleskyUSDT.address.toString();
     await verify(deployedAddress, [wallet1Address]);
+    */
 };
 
 main()

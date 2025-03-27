@@ -29,11 +29,13 @@ const main = async () => {
     await HoleskyRbcc.deployed();
     console.log("HoleskyRbcc = ", HoleskyRbcc.address);
 
+    /*
     await sleep(10000);
 
     let deployedAddress = "";
     deployedAddress = HoleskyRbcc.address.toString();
     await verify(deployedAddress, [wallet2Address]);
+    */
 };
 
 main()
