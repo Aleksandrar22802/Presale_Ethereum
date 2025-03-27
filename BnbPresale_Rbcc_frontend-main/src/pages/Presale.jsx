@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAccount, useBalance, useChainId, useContractReads, useContractWrite, useWaitForTransaction } from "wagmi";
+import { useAccount, useBalance, useChainId, useContractReads, useContractWrite/*, useWaitForTransaction*/ } from "wagmi";
 import { toast } from "react-toastify";
-import { formatEther, parseEther } from "viem";
-import { Progress } from 'react-sweet-progress';
+// import { formatEther, parseEther } from "viem";
+// import { Progress } from 'react-sweet-progress';
 import { Web3 } from "web3"
 import BigNumber from "bignumber.js";
 
 import CountDown from "../components/chart/CountDown";
-import { getContractResult, getErrorMessage, getFormattedDisplayNumber, getFormattedUnits } from "../utils/constants";
-import { getBenkeiContract, getPresaleContract } from "../contracts";
+import { /*getContractResult, */getErrorMessage, getFormattedDisplayNumber, getFormattedUnits } from "../utils/constants";
+import { getPresaleContract } from "../contracts";
 import USDTAbi from "../assets/abi/usdtTokenABI.json"
 import PresaleContract from "../contracts/presale"
 
@@ -16,14 +16,15 @@ import "react-sweet-progress/lib/style.css";
 
 function Presale() 
 {
-    const [value, setValue] = useState("");
     const { address } = useAccount();
     console.log("address = ", address);
+
     const chainId = useChainId()
     console.log("chainId = ", chainId);
+
     const { data: accountBalance } = useBalance({ address, watch: true })
-    const [startTime, setStartTime] = useState(0);
-    const [endTime, setEndTime] = useState(0);
+    // const [startTime, setStartTime] = useState(0);
+    // const [endTime, setEndTime] = useState(0);
     const [softCap, setSoftCap] = useState(0);
     const [hardCap, setHardCap] = useState(0);
     const [minAmount, setMinAmount] = useState(0)
@@ -38,12 +39,10 @@ function Presale()
     const refAmount = useRef(null)
     const token_price = 0.0004
 
-    const web3 = new Web3(window.ethereum)
-    
     const ethereumConstant = "Ethereum";
     const usdtConstant = "USDT";
-    // const currencies = ["Ethereum", "USDT"];
-    const currencies = ["Ethereum"];
+    const currencies = ["Ethereum", "USDT"];
+    // const currencies = ["Ethereum"];
     const [currencyState, setCurrencyState] = useState(0)
     
     const [remainingTime, setRemainingTime] = useState(0);
@@ -56,25 +55,38 @@ function Presale()
     const USDT_DECIMAL = "1000000";
     const RBCC_DECIMAL = "100000000";
 
+    const web3 = new Web3(window.ethereum)
+
     const usdtToken = "0x9547105772feFA88EA98F70c828E27c8CecD22da";
     const usdtContract = new web3.eth.Contract(USDTAbi, usdtToken);
     
     const [cryptoChange, setCryptoChange] = useState(0);
 
-    const stateText = ["Coming Soon", "Presale is alive", "Presale has ended", "Presale was failed"];
-    const btnText = ["Buy", "Buy", "Claim", "Refund"];
-    const stateVal = {
+	const PreSaleStateVal = {
         NotOpened: 0,
         Open: 1,
         End: 2,
-        Fail: 3
+        Fail: 3,
     }
-    const [presaleState, setPresaleState] = useState(0);
-    const [inputValue, setInputValue] = useState('');
-    const [txHash, setTxHash] = useState(null)
+    const [preSaleState, setPreSaleState] = useState(PreSaleStateVal.NotOpened);
+
+    const preSaleStateText = [
+			"Coming Soon", 
+			"Presale is alive", 
+			"Presale has ended", 
+			"Presale was failed"
+	];
+    const preSaleActionText = [
+			"Ready", 
+			"Buy", 
+			"Claim", 
+			"Failed"
+	];
+
+    // const [txHash, setTxHash] = useState(null)
     const [pendingTx, setPendingTx] = useState(false);
 
-    const { data: contractResult, refetch: refetchContracts } = useContractReads({
+    const { data: remainingTimeResult/*, refetch: refetchContracts*/ } = useContractReads({
         contracts: [
             {
                 ...getPresaleContract(chainId),
@@ -84,7 +96,7 @@ function Presale()
         ]
     })
 
-    const { data: claimResult } = useContractReads({
+    const { data: boughtResult } = useContractReads({
         contracts: [
             {
                 ...getPresaleContract(chainId),
@@ -95,54 +107,59 @@ function Presale()
     })
 
     useEffect(() => {
-        if (!contractResult) return
+        if (!remainingTimeResult) return
 
-        console.log("contractResult - ", contractResult)
-        if (contractResult[0].result != undefined) {
-            setRemainingTime(getFormattedUnits(contractResult[0].result));
+        console.log("remainingTimeResult - ", remainingTimeResult)
+        if (remainingTimeResult[0].result != undefined) {
+            setRemainingTime(getFormattedUnits(remainingTimeResult[0].result));
         } else {
             setRemainingTime(0);
         }
-    }, [contractResult])
+    }, [remainingTimeResult])
 
     useEffect(() => {
-        if (contractResult) {
+        if (remainingTimeResult) 
+        {
             console.log("remainingTime--", remainingTime)
             const timerId = setInterval(() => {
-                if (parseInt(remainingTime) > 0) {
-                    const _remainingTIme = remainingTime * 1000;
-                    setCounterDeadline(_remainingTIme)
-                    setPresaleState(stateVal.Open)
-                } else {
+                if (parseInt(remainingTime) > 0) 
+                {
+                    setCounterDeadline(remainingTime * 1000)
+                    setPreSaleState(PreSaleStateVal.Open)
+                } 
+                else
+                {
                     setCounterDeadline(0)
-                    setPresaleState(stateVal.End)
+                    setPreSaleState(PreSaleStateVal.End)
                 }
             }, 1000);
             return () => {
                 clearInterval(timerId);
             }
         }
-    }, [contractResult, startTime, endTime])
+    }, [remainingTime/*, startTime, endTime*/])
 
     useEffect(() => {
-        console.log("claim-----effect", claimResult)
-        if (claimResult !== undefined) {
-            console.log("claim", typeof claimResult[0].result)
-            setClaimAmount(claimResult[0].result);
-        }
-    }, [presaleState]);
+        if (!boughtResult) return
+
+        console.log("boughtResult - ", boughtResult)
+        if (boughtResult !== undefined) {
+            setClaimAmount(boughtResult[0].result);
+        } else {
+            setClaimAmount(0);
+		}
+    }, [boughtResult]);
 
     const { writeAsync: buyWithEther } = useContractWrite({
         ...getPresaleContract(chainId),
         functionName: "buyWithEther",
         onSuccess: (data) => {
             toast.success("Transaction Submitted!")
-            setTxHash(data.hash)
+            // setTxHash(data.hash)
         },
         onError: (data) => {
-            console.log("+++++::", getErrorMessage(data));
             toast.error(getErrorMessage(data))
-            setTxHash(null)
+            // setTxHash(null)
             setPendingTx(false)
         }
     })
@@ -152,11 +169,11 @@ function Presale()
         functionName: "buyTokensWithUSDT",
         onSuccess: (data) => {
             toast.success("Transaction Submitted!")
-            setTxHash(data.hash)
+            // setTxHash(data.hash)
         },
         onError: (data) => {
             toast.error(getErrorMessage(data))
-            setTxHash(null)
+            // setTxHash(null)
             setPendingTx(false)
         }
     })
@@ -166,11 +183,11 @@ function Presale()
         functionName: "claimRbcc",
         onSuccess: (data) => {
             toast.success("Transaction Submitted!")
-            setTxHash(data.hash)
+            // setTxHash(data.hash)
         },
         onError: (data) => {
             toast.error(getErrorMessage(data))
-            setTxHash(null)
+            // setTxHash(null)
             setPendingTx(false)
         }
     })
@@ -178,8 +195,7 @@ function Presale()
     const fetchUsdtBalance = async () => {
         try {
             const balance = await usdtContract.methods.balanceOf(address).call();
-            console.log("usdt balance--", balance)
-            setUsdtBalance(web3.utils.fromWei(balance, 'mwei') / (10 ** 6)); // USDT has 6 decimals (mwei)
+            setUsdtBalance(web3.utils.fromWei(balance, 'mwei') / USDT_DECIMAL);
         } catch (error) {
             console.error("Error fetching USDT balance:", error);
             setUsdtBalance(0);
@@ -189,8 +205,7 @@ function Presale()
     const fetchEthereumBalance = async () => { // New function to fetch Ethereum balance
         try {
             const balance = await web3.eth.getBalance(address);
-            console.log("ethereum balance--", balance)
-            setEthereumBalance(web3.utils.fromWei(balance, 'ether'));
+            setEthereumBalance(web3.utils.fromWei(balance, 'ether') / ETHER_DECIMAL);
         } catch (error) {
             console.error("Error fetching Ethereum balance:", error);
             setEthereumBalance(0);
@@ -210,29 +225,32 @@ function Presale()
     const setCurrency = async (idx) => {
         setCurrencyState(idx);
         setDrop(false)
-        if (currencies[idx] === usdtConstant) {
+        if (currencies[idx] === usdtConstant) 
+        {
             await fetchUsdtBalance();
             setCryptoChange(usdtBalance)
         }
-        if (currencies[idx] === ethereumConstant) {
+        if (currencies[idx] === ethereumConstant) 
+        {
             await fetchEthereumBalance();
             setCryptoChange(ethereumBalance)
         }
     }
 
-    useWaitForTransaction({
-        hash: txHash,
-        onSuccess: (data) => {
-            toast.success("Transaction Success!")
-            setTxHash(null)
-            refetchTotalDepositedEther()
-            setPendingTx(false)
-        }
-    })
+    // useWaitForTransaction({
+    //     hash: txHash,
+    //     onSuccess: (data) => {
+    //         toast.success("Transaction Success!")
+    //         setTxHash(null)
+    //         refetchTotalDepositedEther()
+    //         setPendingTx(false)
+    //     }
+    // })
 
     const handleAction = async () => {
-        if (presaleState == stateVal.Open) 
+        if (preSaleState == PreSaleStateVal.Open) 
         {
+			/*
             if (currencies[currencyState] == usdtConstant) 
             {
                 if (cryptoChange < 50) {
@@ -247,54 +265,64 @@ function Presale()
                     return;
                 }
             }
+			*/
             let transferVal = parseFloat(cryptoChange);
             if (!transferVal) return;
-            setPendingTx(true)
+
+			setPendingTx(true);
 
             let presaleContractAddress = PresaleContract.address[chainId];
             if (currencies[currencyState] == ethereumConstant) 
             {
-                const val = BigNumber(cryptoChange).multipliedBy(ETHER_DECIMAL);
-                web3.eth.methods.transfer(presaleContractAddress, val);                
+                const weiValue = BigNumber(cryptoChange).multipliedBy(ETHER_DECIMAL);
+                web3.eth.methods.transfer(presaleContractAddress, weiValue);                
                 buyWithEther({
                     args: [],
                     from: address,
-                    value: val
+                    value: weiValue
                 });
             }
             else 
             {
-                const val = BigNumber(cryptoChange).multipliedBy(USDT_DECIMAL);
-                await usdtContract.methods.transfer(presaleContractAddress, val);
+                const weiValue = BigNumber(cryptoChange).multipliedBy(USDT_DECIMAL);
+                await usdtContract.methods.transfer(presaleContractAddress, weiValue);
                 buyTokensWithUSDT({
                     args: [],
                     from: address,
-                    value: val
+                    value: weiValue
                 });
             }
-            setPendingTx(false)
+
+            setPendingTx(false);
         } 
-        else if (presaleState == stateVal.End) 
+        else if (preSaleState == PreSaleStateVal.End) 
         {
-            console.log('claim--start---')
-            setPendingTx(true)
-            console.log('claim--pending start---')
-            if (claimResult[0].result > 0) 
+            setPendingTx(true);
+
+			if (boughtResult[0].result > 0) 
             {
                 claimRbcc({
-                    args: []
+                    args: [],
+                    from: address,
                 });
-                setClaimAmount(0)
+
+				setClaimAmount(0);
             }
-            setPendingTx(false)
+
+			setPendingTx(false);
         } 
-        else if (presaleState == stateVal.Fail) 
+        else if (preSaleState == PreSaleStateVal.Fail) 
         {
-            setPendingTx(true)
-            Refund({
-                args: [],
-                from: address
-            })
+			/*
+			setPendingTx(true);
+
+			Refund({
+				args: [],
+				from: address
+			});
+
+			setPendingTx(false);
+			*/
         }
     }
 
@@ -304,13 +332,13 @@ function Presale()
 
     const changeValue = (e) => {
         const val = e.target.value;
-        console.log(val);
-        if (currencies[currencyState] == ethereumConstant) 
+
+		if (currencies[currencyState] == ethereumConstant) 
         {
-          if (parseFloat(val) > ethereumBalance) {
-              toast.error("Balance is " + ethereumBalance);
-              return;
-          }
+			if (parseFloat(val) > ethereumBalance) {
+				toast.error("Balance is " + ethereumBalance);
+				return;
+			}
         } 
         else 
         {
@@ -319,17 +347,16 @@ function Presale()
                 return;
             }
         }
-        setCryptoChange(parseFloat(val));
+
+		setCryptoChange(parseFloat(val));
     }
 
-    console.log("----render")
-    
     return (
       <>
         <div className="flex flex-col items-center mint__container">
           <section className="flex flex-col gap-5 mx-auto top-padding">
-            <div className="text-center title-64 caelum-text1">Welcome to Robocopcoin Presale</div>
-            <div className="title-20 text-center text-[#add8e6]">Robocopcoin plays a crucial role in our project ecosystem. By participating in our Robocopcoin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
+			<div className="text-center title-64 caelum-text1">Welcome to Robocopcoin Presale</div>
+			<div className="title-20 text-center text-[#add8e6]">Robocopcoin plays a crucial role in our project ecosystem. By participating in our Robocopcoin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
           </section>
           <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
             <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
@@ -362,21 +389,10 @@ function Presale()
           <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
             <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
               <section className="w-full">
-                <div className="mb-8 text-center title-36">{contractResult ? stateText[presaleState] : "Loading..."}</div>
+                <div className="mb-8 text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
                 <CountDown end={counterDeadline} />
               </section>
-              {/* <section className="w-full pt-[30px] md:pt-[50px]">
-                <Progress
-                  className="max-w-[500px] m-auto my-3 text-[#add8e6]"
-                  strokeWidth={5}
-                  percent={softCap === 0 || hardCap === 0 ? 0 :
-                    totalDepositedEthAmount <= softCap ? getFormattedDisplayNumber(totalDepositedEthAmount * 100 / softCap, 2) :
-                      totalDepositedEthAmount > hardCap ? 100 : getFormattedDisplayNumber(totalDepositedEthAmount * 100 / hardCap, 2)}
-                  status="active"
-                />
-                <div className="text-right">Raised: {getFormattedDisplayNumber(totalDepositedEthAmount)} Ethereum</div>
-              </section> */}
-              {presaleState === stateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
+              {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
                 <section className="">
                   <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
                     <div className="flex items-center justify-between">
@@ -395,7 +411,7 @@ function Presale()
                         // ref={refAmount}
                         value={cryptoChange}
                         onChange={changeValue}
-                        disabled={presaleState != stateVal.Open}
+                        disabled={preSaleState != PreSaleStateVal.Open}
                       />
                       <div className="flex items-center justify-center gap-3 mt-[30px] relative">
                         <div className="font-bold cursor-pointer" onClick={changeDropState}>{currencies[currencyState]}</div>
@@ -421,16 +437,16 @@ function Presale()
                 )}
               </div>}
               <section className="flex flex-col items-center justify-center w-full top-padding">
-                {presaleState === stateVal.End && <div>
-                  <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Robocopcoin</div>
+                {preSaleState === PreSaleStateVal.End && <div>
+                  <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Rbcd Token</div>
                 </div>}
                 <button
                   className="!h-auto w-full max-w-[140px] primary-btn text-center !text-[18px] !py-[15px]"
-                  disabled={presaleState == stateVal.NotOpened || pendingTx}
+                  disabled={preSaleState == PreSaleStateVal.NotOpened || pendingTx}
                   onClick={handleAction}
                 >
                   {pendingTx && <div className="presale-loader"></div>}
-                  {btnText[presaleState]}
+                  {preSaleActionText[preSaleState]}
                 </button>
               </section>
             </div>
