@@ -1,29 +1,142 @@
-.mint__container {
+.mint_container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+
   width: 100%;
   height: 100%;
-  
-  .overview {
-    .title {
-      font-size: 28px;
-      margin-bottom: 20px;
+
+  border-style: solid;
+  border-width: 1px;
+  border-color: red;
+
+  margin-top: 60px !important;
+
+  .mint_dsc {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: no-wrap;
+    justify-content: space-around;
+    align-items: center;
+
+    // border-style: solid;
+    // border-width: 1px;
+    // border-color: blue;
+
+    // & div {
+    //   border-style: solid;
+    //   border-width: 1px;
+    //   border-color: red;
+    // }
+
+    .dsc_title {
+      color: rgb(249, 255, 56);
     }
-    .content {
-      gap: 20px;
-      justify-content: center;
-      .labels {
-        gap: 20px;
-        font-size: 16px;
-        span {
-          color: getColor(text1)
+
+    .dsc_content {
+      text-align: justify;
+      color: rgb(255, 255, 255);
+    }
+
+    .margin_top,
+    .margin_bottom {
+      min-height: 100px !important;
+
+      // border-style: solid;
+      // border-width: 10px;
+      // border-color: red;
+    }
+
+    padding-left: 50px;
+    padding-right: 50px;
+
+    flex: 50%;
+  }
+
+  .mint_pane {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    border-style: solid;
+    border-width: 1px;
+    border-color: blue;
+
+    padding-left: 50px;
+    padding-right: 50px;
+
+    .mint_wrapper {
+      border-style: solid;
+      border-width: 4px;
+      border-color: rgb(249, 255, 56);
+      border-radius: 20px;
+
+      padding: 20px !important;
+      background-color: rgb(0, 0, 0);
+
+      .mint_content {
+        // border-style: solid;
+        // border-width: 2px;
+        // border-color: rgb(249, 255, 56);
+        border-radius: 20px;
+
+        padding: 20px !important;
+
+        background-image: linear-gradient(to right, rgb(34, 34, 30), rgb(20, 20, 10));
+  
+        .mint_state {
+          border-style: solid;
+          border-width: 1px;
+          border-color: red;
+
+          color: rgb(249, 255, 56);
         }
+
+        .mint_counter_down {
+          border-style: solid;
+          border-width: 1px;
+          border-color: red;
+
+          color: rgb(255, 255, 255);
+        }
+  
       }
-      .values {
-        gap: 20px;
-        font-size: 16px;
-        text-align: right;
-      }
+    }
+
+    flex: 50%;
+  }
+  
+  @media (max-width: 800px) {
+    .mint_dsc, .mint_pane {
+      flex: 100%;
     }
   }
+
+  // .overview {
+  //   .title {
+  //     font-size: 28px;
+  //     margin-bottom: 20px;
+  //   }
+  //   .content {
+  //     gap: 20px;
+  //     justify-content: center;
+  //     .labels {
+  //       gap: 20px;
+  //       font-size: 16px;
+  //       span {
+  //         color: getColor(text1)
+  //       }
+  //     }
+  //     .values {
+  //       gap: 20px;
+  //       font-size: 16px;
+  //       text-align: right;
+  //     }
+  //   }
+  // }
 }
 
 .mint-actions,

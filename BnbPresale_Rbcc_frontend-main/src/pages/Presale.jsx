@@ -413,12 +413,14 @@ function Presale() {
 
     return (
         <>
-            <div className="flex flex-col items-center mint__container">
-                <section className="flex flex-col gap-5 mx-auto top-padding">
-                    <div className="text-center title-64 caelum-text1">Welcome to Robocopcoin Presale</div>
-                    <div className="title-20 text-center text-[#add8e6]">Robocopcoin plays a crucial role in our project ecosystem. By participating in our Robocopcoin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
-                </section>
-                <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
+            <div className="mint_container">
+                <div className="mint_dsc">
+                    <div className="margin_top"></div>
+                    <div className="dsc_title title-64 text-center">Welcome to Rbcc-PreSale</div>
+                    <div className="dsc_content title-36 text-center">Rbcc coin plays a crucial role in our project ecosystem. By participating in our Rbcc coin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
+                    <div className="margin_bottom"></div>
+                </div>
+                {/* <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
                     <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
                         <div className="flex items-center justify-between w-full mb-3">
                             <div className="text-center title-20 caelum-text1">Presale Rate</div>
@@ -445,72 +447,72 @@ function Presale() {
                             <div className="title-20">1,000,000,000 Rbcc</div>
                         </div>
                     </div>
-                </section>
-                <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
-                    <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
-                        <section className="w-full">
-                            <div className="mb-8 text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
+                </section> */}
+                <div className="mint_pane">
+                    <div className="mint_wrapper">
+                        <div className="mint_content">
+                            <div className="mint_state text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
                             <CountDown end={counterDeadline} />
-                        </section>
-                        {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
-                            <section className="">
-                                <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
-                                    <div className="flex items-center justify-between">
-                                        <div >Amount</div>
-                                        <div className="flex items-center justify-center gap-3">
-                                            <div >Balance: {currencyState === 1 ? usdtBalance : ethereumBalance}</div>
-                                            <div className="font-bold text-[#d49c44] cursor-pointer" onClick={() => setInputMax()}>MAX</div>
+                            {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
+                                <section className="">
+                                    <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
+                                        <div className="flex items-center justify-between">
+                                            <div >Amount</div>
+                                            <div className="flex items-center justify-center gap-3">
+                                                <div >Balance: {currencyState === 1 ? usdtBalance : ethereumBalance}</div>
+                                                <div className="font-bold text-[#d49c44] cursor-pointer" onClick={() => setInputMax()}>MAX</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center justify-between ">
+                                            <input
+                                                type="number"
+                                                inputMode="decimal"
+                                                placeholder="0.00"
+                                                className="h-full w-full mt-[25px] md:mt-[20px] text-[30px] md:text-[26px] pr-[20px] bg-transparent"
+                                                // ref={refAmount}
+                                                value={saleCryptoAmount}
+                                                onChange={changeValue}
+                                                disabled={preSaleState != PreSaleStateVal.Open}
+                                            />
+                                            <div className="flex items-center justify-center gap-3 mt-[30px] relative">
+                                                <div className="font-bold cursor-pointer" onClick={changeDropState}>{currencies[currencyState]}</div>
+                                                {drop &&
+                                                    <div className="flex flex-col right-[-1px] absolute top-[105%] w-[auto] z-5 block h-[auto] bg-[#212121] mt-2 border-[1px] rounded-b-xl overflow-hidden">
+                                                        {currencies.map((currency, idx) => {
+                                                            return (
+                                                                <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)} key={idx} >{currency}</div>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center justify-between ">
-                                        <input
-                                            type="number"
-                                            inputMode="decimal"
-                                            placeholder="0.00"
-                                            className="h-full w-full mt-[25px] md:mt-[20px] text-[30px] md:text-[26px] pr-[20px] bg-transparent"
-                                            // ref={refAmount}
-                                            value={saleCryptoAmount}
-                                            onChange={changeValue}
-                                            disabled={preSaleState != PreSaleStateVal.Open}
-                                        />
-                                        <div className="flex items-center justify-center gap-3 mt-[30px] relative">
-                                            <div className="font-bold cursor-pointer" onClick={changeDropState}>{currencies[currencyState]}</div>
-                                            {drop &&
-                                                <div className="flex flex-col right-[-1px] absolute top-[105%] w-[auto] z-5 block h-[auto] bg-[#212121] mt-2 border-[1px] rounded-b-xl overflow-hidden">
-                                                    {currencies.map((currency, idx) => {
-                                                        return (
-                                                            <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)} key={idx} >{currency}</div>
-                                                        )
-                                                    })}
-                                                </div>
-                                            }
-                                        </div>
+                                </section>
+                                {saleCryptoAmount !== 0 && !isNaN(saleCryptoAmount) && (
+                                    <div className="flex items-center justify-center">
+                                        <span className="mt-5">
+                                            You will be able to claim {buyRbccAmount} Robocopcoin
+                                        </span>
                                     </div>
-                                </div>
-                            </section>
-                            {saleCryptoAmount !== 0 && !isNaN(saleCryptoAmount) && (
-                                <div className="flex items-center justify-center">
-                                    <span className="mt-5">
-                                        You will be able to claim {buyRbccAmount} Robocopcoin
-                                    </span>
-                                </div>
-                            )}
-                        </div>}
-                        <section className="flex flex-col items-center justify-center w-full top-padding">
-                            {preSaleState === PreSaleStateVal.End && <div>
-                                <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Rbcd Token</div>
+                                )}
                             </div>}
-                            <button
-                                className="!h-auto w-full max-w-[140px] primary-btn text-center !text-[18px] !py-[15px]"
-                                disabled={preSaleState == PreSaleStateVal.NotOpened || pendingTx}
-                                onClick={handleAction}
-                            >
-                                {pendingTx && <div className="presale-loader"></div>}
-                                {preSaleActionText[preSaleState]}
-                            </button>
-                        </section>
+                            <section className="flex flex-col items-center justify-center w-full top-padding">
+                                {preSaleState === PreSaleStateVal.End && <div>
+                                    <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Rbcd Token</div>
+                                </div>}
+                                <button
+                                    className="!h-auto w-full max-w-[140px] primary-btn text-center !text-[18px] !py-[15px]"
+                                    disabled={preSaleState == PreSaleStateVal.NotOpened || pendingTx}
+                                    onClick={handleAction}
+                                >
+                                    {pendingTx && <div className="presale-loader"></div>}
+                                    {preSaleActionText[preSaleState]}
+                                </button>
+                            </section>
+                        </div>
                     </div>
-                </section>
+                </div>
             </div>
         </>
     );
