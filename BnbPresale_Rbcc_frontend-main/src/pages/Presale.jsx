@@ -14,10 +14,9 @@ import PresaleContract from "../contracts/presale"
 
 import "react-sweet-progress/lib/style.css";
 
-function Presale() 
-{
+function Presale() {
     const { address } = useAccount();
-	let connectedWalletAddress = address;
+    let connectedWalletAddress = address;
     console.log("connectedWalletAddress = ", connectedWalletAddress);
 
     const chainId = useChainId()
@@ -45,46 +44,44 @@ function Presale()
     const currencies = ["Ethereum", "USDT"];
     // const currencies = ["Ethereum"];
     const [currencyState, setCurrencyState] = useState(0)
-    
+
     const [remainingTime, setRemainingTime] = useState(0);
     const [claimAmount, setClaimAmount] = useState(0);
     const [drop, setDrop] = useState(false);
     const [usdtBalance, setUsdtBalance] = useState(0);
     const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
-    
+
     const ETHER_DECIMAL = 1000000000000000000;
     // const ETHER_DECIMAL = 1000000000;
     const USDT_DECIMAL = 1000000;
     const RBCC_DECIMAL = 100000000;
-	const USDT_PER_ETHER = 2000;
-	const USDT_PER_RBCC = 10;
+    const USDT_PER_ETHER = 2000;
+    const USDT_PER_RBCC = 10;
 
     const defaultWeb3 = new Web3(window.ethereum)
     const usdtToken = "0xFdf8062Ad4D57F1539D122231A2b189cfc58a955";
     const usdtContract = new defaultWeb3.eth.Contract(USDTAbi, usdtToken);
-    
+
     const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
     const [buyRbccAmount, setBuyRbccAmount] = useState(0);
 
     useEffect(() => {
-		console.log("saleCryptoAmount = " + saleCryptoAmount);
-		let cryptoAmount = saleCryptoAmount;
-		if (currencies[currencyState] == ethereumConstant) 
-		{
-			// ETHER => USDT
-			cryptoAmount = cryptoAmount * USDT_PER_ETHER;
-			// USDT => RBCC
-			cryptoAmount = cryptoAmount / USDT_PER_RBCC;
-		}
-		else
-		{
-			// USDT => RBCC
-			cryptoAmount = cryptoAmount / USDT_PER_RBCC;
-		}
-		setBuyRbccAmount(cryptoAmount);
-	}, [saleCryptoAmount])
+        console.log("saleCryptoAmount = " + saleCryptoAmount);
+        let cryptoAmount = saleCryptoAmount;
+        if (currencies[currencyState] == ethereumConstant) {
+            // ETHER => USDT
+            cryptoAmount = cryptoAmount * USDT_PER_ETHER;
+            // USDT => RBCC
+            cryptoAmount = cryptoAmount / USDT_PER_RBCC;
+        }
+        else {
+            // USDT => RBCC
+            cryptoAmount = cryptoAmount / USDT_PER_RBCC;
+        }
+        setBuyRbccAmount(cryptoAmount);
+    }, [saleCryptoAmount])
 
-	const PreSaleStateVal = {
+    const PreSaleStateVal = {
         NotOpened: 0,
         Open: 1,
         End: 2,
@@ -93,17 +90,17 @@ function Presale()
     const [preSaleState, setPreSaleState] = useState(PreSaleStateVal.NotOpened);
 
     const preSaleStateText = [
-			"Coming Soon", 
-			"Presale is alive", 
-			"Presale has ended", 
-			"Presale was failed"
-	];
+        "Coming Soon",
+        "Presale is alive",
+        "Presale has ended",
+        "Presale was failed"
+    ];
     const preSaleActionText = [
-			"Ready", 
-			"Buy", 
-			"Claim", 
-			"Failed"
-	];
+        "Ready",
+        "Buy",
+        "Claim",
+        "Failed"
+    ];
 
     // const [txHash, setTxHash] = useState(null)
     const [pendingTx, setPendingTx] = useState(false);
@@ -118,15 +115,15 @@ function Presale()
         ]
     })
 
-	const { data: boughtResult } = useContractReads({
-		contracts: [
-			{
-				...getPresaleContract(chainId),
-				functionName: "getAddressBought",
-				args: connectedWalletAddress != undefined ? [connectedWalletAddress] : [],
-			},
-		]
-	})
+    const { data: boughtResult } = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getAddressBought",
+                args: connectedWalletAddress != undefined ? [connectedWalletAddress] : [],
+            },
+        ]
+    })
 
     useEffect(() => {
         if (!remainingTimeResult) return
@@ -140,17 +137,14 @@ function Presale()
     }, [remainingTimeResult])
 
     useEffect(() => {
-        if (remainingTimeResult) 
-        {
+        if (remainingTimeResult) {
             console.log("remainingTime--", remainingTime)
             const timerId = setInterval(() => {
-                if (parseInt(remainingTime) > 0) 
-                {
+                if (parseInt(remainingTime) > 0) {
                     setCounterDeadline(remainingTime * 1000)
                     setPreSaleState(PreSaleStateVal.Open)
-                } 
-                else
-                {
+                }
+                else {
                     setCounterDeadline(0)
                     setPreSaleState(PreSaleStateVal.End)
                 }
@@ -169,7 +163,7 @@ function Presale()
             setClaimAmount(boughtResult[0].result);
         } else {
             setClaimAmount(0);
-		}
+        }
     }, [boughtResult]);
 
     const { writeAsync: buyWithEther } = useContractWrite({
@@ -215,14 +209,14 @@ function Presale()
     })
 
     const fetchUsdtBalance = async () => {
-		if (connectedWalletAddress == undefined) return;
+        if (connectedWalletAddress == undefined) return;
         try {
             let balance = await usdtContract.methods.balanceOf(connectedWalletAddress).call();
-			// console.log("balance = " + balance);
-			balance = Number(balance) / Number(USDT_DECIMAL);
-			console.log("balance = " + balance);
+            // console.log("balance = " + balance);
+            balance = Number(balance) / Number(USDT_DECIMAL);
+            console.log("balance = " + balance);
             setUsdtBalance(balance);
-			setSaleCryptoAmount(balance);
+            setSaleCryptoAmount(balance);
         } catch (error) {
             console.error("Error fetching USDT balance:", error);
             setUsdtBalance(0);
@@ -230,18 +224,18 @@ function Presale()
     };
 
     const fetchEthereumBalance = async () => { // New function to fetch Ethereum balance
-		if (connectedWalletAddress == undefined) return;
+        if (connectedWalletAddress == undefined) return;
         try {
-			// const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
-			const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
-			// const web3 = new Web3(window.ethereum)
+            // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
+            const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+            // const web3 = new Web3(window.ethereum)
 
             let balance = await web3.eth.getBalance(connectedWalletAddress);
-			// console.log("balance = " + balance);
-			balance = Number(balance) / Number(ETHER_DECIMAL);
-			console.log("balance = " + balance);
+            // console.log("balance = " + balance);
+            balance = Number(balance) / Number(ETHER_DECIMAL);
+            console.log("balance = " + balance);
             setEthereumBalance(balance);
-			setSaleCryptoAmount(balance);
+            setSaleCryptoAmount(balance);
         } catch (error) {
             console.error("Error fetching Ethereum balance:", error);
             setEthereumBalance(0);
@@ -261,13 +255,11 @@ function Presale()
     const setCurrency = async (idx) => {
         setCurrencyState(idx);
         setDrop(false)
-        if (currencies[idx] === usdtConstant) 
-        {
+        if (currencies[idx] === usdtConstant) {
             await fetchUsdtBalance();
             setSaleCryptoAmount(usdtBalance)
         }
-        if (currencies[idx] === ethereumConstant) 
-        {
+        if (currencies[idx] === ethereumConstant) {
             await fetchEthereumBalance();
             setSaleCryptoAmount(ethereumBalance)
         }
@@ -284,10 +276,9 @@ function Presale()
     // })
 
     const handleAction = async () => {
-		if (connectedWalletAddress == undefined) return;
-        if (preSaleState == PreSaleStateVal.Open) 
-        {
-			/*
+        if (connectedWalletAddress == undefined) return;
+        if (preSaleState == PreSaleStateVal.Open) {
+            /*
             if (currencies[currencyState] == usdtConstant) 
             {
                 if (saleCryptoAmount < 50) {
@@ -302,103 +293,98 @@ function Presale()
                     return;
                 }
             }
-			*/
+            */
             let transferVal = parseFloat(saleCryptoAmount);
             if (!transferVal) return;
 
-			setPendingTx(true);
+            setPendingTx(true);
 
             let presaleContractAddress = PresaleContract.address[chainId];
-            if (currencies[currencyState] == ethereumConstant) 
-            {
-				// const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
-				const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
-				// const web3 = new Web3(window.ethereum)
+            if (currencies[currencyState] == ethereumConstant) {
+                // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
+                const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+                // const web3 = new Web3(window.ethereum)
 
                 const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
-				// web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
-				// 	from: connectedWalletAddress
-				// });
+                // web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
+                // 	from: connectedWalletAddress
+                // });
 
-				try {
-					const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
-					const gasPrice = await web3.eth.getGasPrice();
-					const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
+                try {
+                    const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
+                    const gasPrice = await web3.eth.getGasPrice();
+                    const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
 
-					const tx = {
-						from: connectedWalletAddress,
-						to: presaleContractAddress,
-						value: weiValue,
-						gas: 21000,  // Estimated gas limit for a simple transaction
-						gasPrice: gasPrice,
-						nonce: nonce,
-						chainId: 17000,					
-					};
-					
-					// Sign the transaction
-					const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
-					await web3.eth.sendTransaction(signedTx.rawTransaction);
+                    const tx = {
+                        from: connectedWalletAddress,
+                        to: presaleContractAddress,
+                        value: weiValue,
+                        gas: 21000,  // Estimated gas limit for a simple transaction
+                        gasPrice: gasPrice,
+                        nonce: nonce,
+                        chainId: 17000,
+                    };
 
-					// await web3.eth.sendTransaction(tx);
+                    // Sign the transaction
+                    const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+                    await web3.eth.sendTransaction(signedTx.rawTransaction);
 
-					// buyWithEther({
-					// 	args: [],
-					// 	from: connectedWalletAddress,
-					// 	value: weiValue
-					// });
+                    // await web3.eth.sendTransaction(tx);
 
-				} catch (err) {
-					console.log(`error with ${err}`);
-				}
+                    // buyWithEther({
+                    // 	args: [],
+                    // 	from: connectedWalletAddress,
+                    // 	value: weiValue
+                    // });
+
+                } catch (err) {
+                    console.log(`error with ${err}`);
+                }
             }
-            else 
-            {
-				try {
-					const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
-					await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
-						from: connectedWalletAddress
-					});
-					
-					buyTokensWithUSDT({
-					    args: [],
-					    from: connectedWalletAddress,
-					    value: weiValue
-					});
-				} catch(err) {
-					console.log(`error with ${err}`);
-				}
+            else {
+                try {
+                    const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
+                    await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
+                        from: connectedWalletAddress
+                    });
+
+                    buyTokensWithUSDT({
+                        args: [],
+                        from: connectedWalletAddress,
+                        value: weiValue
+                    });
+                } catch (err) {
+                    console.log(`error with ${err}`);
+                }
             }
 
             setPendingTx(false);
-        } 
-        else if (preSaleState == PreSaleStateVal.End) 
-        {
+        }
+        else if (preSaleState == PreSaleStateVal.End) {
             setPendingTx(true);
 
-			if (boughtResult[0].result > 0) 
-            {
+            if (boughtResult[0].result > 0) {
                 claimRbcc({
                     args: [],
                     from: connectedWalletAddress,
                 });
 
-				setClaimAmount(0);
+                setClaimAmount(0);
             }
 
-			setPendingTx(false);
-        } 
-        else if (preSaleState == PreSaleStateVal.Fail) 
-        {
-			/*
-			setPendingTx(true);
+            setPendingTx(false);
+        }
+        else if (preSaleState == PreSaleStateVal.Fail) {
+            /*
+            setPendingTx(true);
 
-			Refund({
-				args: [],
-				from: connectedWalletAddress
-			});
+            Refund({
+                args: [],
+                from: connectedWalletAddress
+            });
 
-			setPendingTx(false);
-			*/
+            setPendingTx(false);
+            */
         }
     }
 
@@ -409,126 +395,124 @@ function Presale()
     const changeValue = (e) => {
         const val = e.target.value;
 
-		if (currencies[currencyState] == ethereumConstant) 
-        {
-			if (parseFloat(val) > ethereumBalance) {
-				toast.error("Balance is " + ethereumBalance);
-				return;
-			}
-        } 
-        else 
-        {
+        if (currencies[currencyState] == ethereumConstant) {
+            if (parseFloat(val) > ethereumBalance) {
+                toast.error("Balance is " + ethereumBalance);
+                return;
+            }
+        }
+        else {
             if (parseFloat(val) > usdtBalance) {
                 toast.error("Balance is " + usdtBalance);
                 return;
             }
         }
 
-		setSaleCryptoAmount(parseFloat(val));
+        setSaleCryptoAmount(parseFloat(val));
     }
 
     return (
-      <>
-        <div className="flex flex-col items-center mint__container">
-          <section className="flex flex-col gap-5 mx-auto top-padding">
-			<div className="text-center title-64 caelum-text1">Welcome to Robocopcoin Presale</div>
-			<div className="title-20 text-center text-[#add8e6]">Robocopcoin plays a crucial role in our project ecosystem. By participating in our Robocopcoin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
-          </section>
-          <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
-            <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="text-center title-20 caelum-text1">Presale Rate</div>
-                <div className="title-20"> 0.0004 USDT / Rbcc</div>
-              </div>
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="text-center title-20 caelum-text1">Listing Rate</div>
-                <div className="title-20"> 0.0008 USDT / Rbcc</div>
-              </div>
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="text-center title-20 caelum-text1">Min Contribution</div>
-                <div className="title-20">50 USDT</div>
-              </div>
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="text-center title-20 caelum-text1">Max Contribution</div>
-                <div className="title-20">10000 USDT</div>
-              </div>
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="text-center title-20 caelum-text1">Initial Supply</div>
-                <div className="title-20">3,000,000,000 Rbcc</div>
-              </div>
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="text-center title-20 caelum-text1">Tokens For Presale</div>
-                <div className="title-20">1,000,000,000 Rbcc</div>
-              </div>
-            </div>
-          </section>
-          <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
-            <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
-              <section className="w-full">
-                <div className="mb-8 text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
-                <CountDown end={counterDeadline} />
-              </section>
-              {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
-                <section className="">
-                  <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
-                    <div className="flex items-center justify-between">
-                      <div >Amount</div>
-                      <div className="flex items-center justify-center gap-3">
-                        <div >Balance: {currencyState === 1 ? usdtBalance : ethereumBalance}</div>
-                        <div className="font-bold text-[#d49c44] cursor-pointer" onClick={() => setInputMax()}>MAX</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between ">
-                      <input
-                        type="number"
-                        inputMode="decimal"
-                        placeholder="0.00"
-                        className="h-full w-full mt-[25px] md:mt-[20px] text-[30px] md:text-[26px] pr-[20px] bg-transparent"
-                        // ref={refAmount}
-                        value={saleCryptoAmount}
-                        onChange={changeValue}
-                        disabled={preSaleState != PreSaleStateVal.Open}
-                      />
-                      <div className="flex items-center justify-center gap-3 mt-[30px] relative">
-                        <div className="font-bold cursor-pointer" onClick={changeDropState}>{currencies[currencyState]}</div>
-                        {drop &&
-                          <div className="flex flex-col right-[-1px] absolute top-[105%] w-[auto] z-5 block h-[auto] bg-[#212121] mt-2 border-[1px] rounded-b-xl overflow-hidden">
-                            {currencies.map((currency, idx) => {
-                              return (
-                                <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)} key={idx} >{currency}</div>
-                              )
-                            })}
-                          </div>
-                        }
-                      </div>
-                    </div>
-                  </div>
+        <>
+            <div className="flex flex-col items-center mint__container">
+                <section className="flex flex-col gap-5 mx-auto top-padding">
+                    <div className="text-center title-64 caelum-text1">Welcome to Robocopcoin Presale</div>
+                    <div className="title-20 text-center text-[#add8e6]">Robocopcoin plays a crucial role in our project ecosystem. By participating in our Robocopcoin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
                 </section>
-                {saleCryptoAmount !== 0 && !isNaN(saleCryptoAmount) && (
-                  <div className="flex items-center justify-center">
-                    <span className="mt-5">
-                      You will be able to claim {buyRbccAmount} Robocopcoin
-                    </span>
-                  </div>
-                )}
-              </div>}
-              <section className="flex flex-col items-center justify-center w-full top-padding">
-                {preSaleState === PreSaleStateVal.End && <div>
-                  <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Rbcd Token</div>
-                </div>}
-                <button
-                  className="!h-auto w-full max-w-[140px] primary-btn text-center !text-[18px] !py-[15px]"
-                  disabled={preSaleState == PreSaleStateVal.NotOpened || pendingTx}
-                  onClick={handleAction}
-                >
-                  {pendingTx && <div className="presale-loader"></div>}
-                  {preSaleActionText[preSaleState]}
-                </button>
-              </section>
+                <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
+                    <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
+                        <div className="flex items-center justify-between w-full mb-3">
+                            <div className="text-center title-20 caelum-text1">Presale Rate</div>
+                            <div className="title-20"> 0.0004 USDT / Rbcc</div>
+                        </div>
+                        <div className="flex items-center justify-between w-full mb-3">
+                            <div className="text-center title-20 caelum-text1">Listing Rate</div>
+                            <div className="title-20"> 0.0008 USDT / Rbcc</div>
+                        </div>
+                        <div className="flex items-center justify-between w-full mb-3">
+                            <div className="text-center title-20 caelum-text1">Min Contribution</div>
+                            <div className="title-20">50 USDT</div>
+                        </div>
+                        <div className="flex items-center justify-between w-full mb-3">
+                            <div className="text-center title-20 caelum-text1">Max Contribution</div>
+                            <div className="title-20">10000 USDT</div>
+                        </div>
+                        <div className="flex items-center justify-between w-full mb-3">
+                            <div className="text-center title-20 caelum-text1">Initial Supply</div>
+                            <div className="title-20">3,000,000,000 Rbcc</div>
+                        </div>
+                        <div className="flex items-center justify-between w-full mb-3">
+                            <div className="text-center title-20 caelum-text1">Tokens For Presale</div>
+                            <div className="title-20">1,000,000,000 Rbcc</div>
+                        </div>
+                    </div>
+                </section>
+                <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
+                    <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
+                        <section className="w-full">
+                            <div className="mb-8 text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
+                            <CountDown end={counterDeadline} />
+                        </section>
+                        {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
+                            <section className="">
+                                <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
+                                    <div className="flex items-center justify-between">
+                                        <div >Amount</div>
+                                        <div className="flex items-center justify-center gap-3">
+                                            <div >Balance: {currencyState === 1 ? usdtBalance : ethereumBalance}</div>
+                                            <div className="font-bold text-[#d49c44] cursor-pointer" onClick={() => setInputMax()}>MAX</div>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between ">
+                                        <input
+                                            type="number"
+                                            inputMode="decimal"
+                                            placeholder="0.00"
+                                            className="h-full w-full mt-[25px] md:mt-[20px] text-[30px] md:text-[26px] pr-[20px] bg-transparent"
+                                            // ref={refAmount}
+                                            value={saleCryptoAmount}
+                                            onChange={changeValue}
+                                            disabled={preSaleState != PreSaleStateVal.Open}
+                                        />
+                                        <div className="flex items-center justify-center gap-3 mt-[30px] relative">
+                                            <div className="font-bold cursor-pointer" onClick={changeDropState}>{currencies[currencyState]}</div>
+                                            {drop &&
+                                                <div className="flex flex-col right-[-1px] absolute top-[105%] w-[auto] z-5 block h-[auto] bg-[#212121] mt-2 border-[1px] rounded-b-xl overflow-hidden">
+                                                    {currencies.map((currency, idx) => {
+                                                        return (
+                                                            <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)} key={idx} >{currency}</div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            {saleCryptoAmount !== 0 && !isNaN(saleCryptoAmount) && (
+                                <div className="flex items-center justify-center">
+                                    <span className="mt-5">
+                                        You will be able to claim {buyRbccAmount} Robocopcoin
+                                    </span>
+                                </div>
+                            )}
+                        </div>}
+                        <section className="flex flex-col items-center justify-center w-full top-padding">
+                            {preSaleState === PreSaleStateVal.End && <div>
+                                <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Rbcd Token</div>
+                            </div>}
+                            <button
+                                className="!h-auto w-full max-w-[140px] primary-btn text-center !text-[18px] !py-[15px]"
+                                disabled={preSaleState == PreSaleStateVal.NotOpened || pendingTx}
+                                onClick={handleAction}
+                            >
+                                {pendingTx && <div className="presale-loader"></div>}
+                                {preSaleActionText[preSaleState]}
+                            </button>
+                        </section>
+                    </div>
+                </section>
             </div>
-          </section>
-        </div>
-      </>
+        </>
     );
 }
 
