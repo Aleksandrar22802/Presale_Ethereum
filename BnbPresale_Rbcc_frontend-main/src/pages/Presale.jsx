@@ -12,6 +12,7 @@ import { getPresaleContract } from "../contracts";
 import USDTAbi from "../assets/abi/usdtTokenABI.json"
 import PresaleContract from "../contracts/presale"
 
+import IconMint from "../assets/icons/icon-mint.png"
 import IconEther from "../assets/icons/lp-CAL_ETH.png"
 import IconUSDT from "../assets/icons/lp-caUSD_USDC.png"
 import IconRbcc from "../assets/icons/token-LSDoge.png"
@@ -465,7 +466,12 @@ function Presale() {
                 <div className="mint_pane">
                     <div className="mint_wrapper">
                         <div className="mint_content">
-                            <div className="mint_state text-center title-36">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div>
+                            <div className="mint_title">
+                                <span>Buy Now ...</span>
+                                <img src={IconMint} />
+                                </div>
+                            {/* <div className="mint_state text-center">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div> */}
+                            <div className="mint_state text-center">Expected Tokens : </div>
                             <CountDown end={counterDeadline} />
                             <div className="mint_currency_select">
                                 <button 

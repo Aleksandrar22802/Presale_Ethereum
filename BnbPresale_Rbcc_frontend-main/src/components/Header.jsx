@@ -10,6 +10,7 @@ import { useAuthState } from "../context/AuthContext";
 import { useResponsiveView } from "../utils/customHooks"
 
 import logo from "../assets/logo/logo.png"
+import IconStable from "../assets/icons/icon-stable.png"
 import ArrowDown from "../assets/icons/ArrowDown";
 import MenuMore from "../assets/icons/MenuMore";
 import TwitterIcon from "../assets/icons/twitter.png"
@@ -104,9 +105,8 @@ function Header(props) {
             <div className="logo flex-grow" onClick={() => { navigate('/') }}>
                 <Link to="/home" className="flex items-center gap-2 text-[#add8e6]">
                     <img 
-                        src={logo} 
+                        src={IconStable} 
                         alt={logo}
-                        width="60px" 
                     />
                     <span>
                         Rbcc-PreSale

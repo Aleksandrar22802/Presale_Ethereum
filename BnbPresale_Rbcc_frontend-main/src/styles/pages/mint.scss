@@ -12,7 +12,7 @@
   // border-width: 1px;
   // border-color: red;
 
-  margin-top: 60px !important;
+  margin-top: 100px !important;
 
   .mint_dsc {
     display: flex;
@@ -87,14 +87,34 @@
 
         background-image: linear-gradient(to right, rgb(44, 44, 35), rgb(12, 12, 10));
   
+        .mint_title {
+          font-size: 36px;
+          color: rgb(255, 255, 255);
+
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+
+          & img {
+            width: 50px;
+            height: 50px;
+
+            margin-left: 20px;
+          }
+
+          margin-bottom: 20px;
+        }
+
         .mint_state {
           // border-style: solid;
           // border-width: 1px;
           // border-color: red;
 
+          font-size: 32px;
           color: rgb(249, 255, 56);
 
-          margin-bottom: 10px;
+          margin-bottom: 20px;
         }
 
         .mint_counter_down {
@@ -106,6 +126,8 @@
           border-width: 2px;
           border-color: rgb(117, 117, 49);
           border-radius: 10px;
+
+          background-color: rgba(20, 20, 20, 50);
 
           padding-bottom: 20px !important;
 
