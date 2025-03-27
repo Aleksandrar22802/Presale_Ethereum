@@ -22,7 +22,7 @@ import "react-sweet-progress/lib/style.css";
 function Presale() {
     const { address } = useAccount();
     let connectedWalletAddress = address;
-    console.log("connectedWalletAddress = ", connectedWalletAddress);
+    // console.log("connectedWalletAddress = ", connectedWalletAddress);
     const isConnectedWallet = () => {
         if (connectedWalletAddress != undefined) 
         {
@@ -34,7 +34,7 @@ function Presale() {
     }
 
     const chainId = useChainId()
-    console.log("chainId = ", chainId);
+    // console.log("chainId = ", chainId);
 
     // const { data: accountBalance } = useBalance({ connectedWalletAddress, watch: true })
     // const [startTime, setStartTime] = useState(0);
@@ -61,7 +61,31 @@ function Presale() {
     // const currencies = ["Ethereum"];
     const [currencyState, setCurrencyState] = useState(0)
 
-    const [remainingTime, setRemainingTime] = useState(0);
+    const CRYPTO_TYPE = {
+        ETH : 0,
+        USDT : 1,
+    };
+    const [saleCryptoType, setSaleCryptoType] = useState(CRYPTO_TYPE.USDT);
+
+    useEffect(() => {
+        setDrop(false)
+        setSaleCryptoAmount(0);
+        setSaleCryptoBalance(0);
+        if (saleCryptoType == CRYPTO_TYPE.ETH)
+        {
+            fetchEthereumBalance();
+            // setSaleCryptoAmount(ethereumBalance)
+        }
+        else
+        {            
+            fetchUsdtBalance();
+            // setSaleCryptoAmount(usdtBalance)
+        }
+    }, [saleCryptoType])
+
+    const [saleCryptoBalance, setSaleCryptoBalance] = useState(0);
+    const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
+
     const [drop, setDrop] = useState(false);
     const [usdtBalance, setUsdtBalance] = useState(0);
     const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
@@ -77,11 +101,10 @@ function Presale() {
     const usdtToken = "0xFdf8062Ad4D57F1539D122231A2b189cfc58a955";
     const usdtContract = new defaultWeb3.eth.Contract(USDTAbi, usdtToken);
 
-    const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
     const [buyRbccAmount, setBuyRbccAmount] = useState(0);
 
     useEffect(() => {
-        console.log("saleCryptoAmount = " + saleCryptoAmount);
+        // console.log("saleCryptoAmount = " + saleCryptoAmount);
         let cryptoAmount = saleCryptoAmount;
         if (currencies[currencyState] == ethereumConstant) {
             // ETHER => USDT
@@ -152,6 +175,8 @@ function Presale() {
             setLimitForPresale(0);
         }
     }, [limitForPresaleResult])
+
+    const [remainingTime, setRemainingTime] = useState(0);
 
     const { data: remainingTimeResult } = useContractReads({
         contracts: [
@@ -297,61 +322,73 @@ function Presale() {
     })
 
     const fetchUsdtBalance = async () => {
-        if (connectedWalletAddress == undefined) return;
+        if (isConnectedWallet() == false) 
+        {
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
+            return;
+        }
+
         try {
             let balance = await usdtContract.methods.balanceOf(connectedWalletAddress).call();
-            // console.log("balance = " + balance);
-            balance = Number(balance) / Number(USDT_DECIMAL);
-            console.log("balance = " + balance);
-            setUsdtBalance(balance);
+            balance = BigNumber(balance).dividedBy(BigNumber(USDT_DECIMAL)).toNumber();
+            console.log("fetchUsdtBalance = " + balance);
             setSaleCryptoAmount(balance);
+            setSaleCryptoBalance(balance);
         } catch (error) {
             console.error("Error fetching USDT balance:", error);
-            setUsdtBalance(0);
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
         }
     };
 
-    const fetchEthereumBalance = async () => { // New function to fetch Ethereum balance
-        if (connectedWalletAddress == undefined) return;
+    const fetchEthereumBalance = async () => {
+        if (isConnectedWallet() == false) 
+        {
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
+            return;
+        }
+
         try {
             // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
             const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
             // const web3 = new Web3(window.ethereum)
 
             let balance = await web3.eth.getBalance(connectedWalletAddress);
-            // console.log("balance = " + balance);
-            balance = Number(balance) / Number(ETHER_DECIMAL);
-            console.log("balance = " + balance);
-            setEthereumBalance(balance);
+            balance = BigNumber(balance).dividedBy(BigNumber(ETHER_DECIMAL)).toNumber();
+            console.log("fetchEthereumBalance = " + balance);
             setSaleCryptoAmount(balance);
+            setSaleCryptoBalance(balance);
         } catch (error) {
             console.error("Error fetching Ethereum balance:", error);
-            setEthereumBalance(0);
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
         }
     };
 
-    useEffect(() => {
-        if (connectedWalletAddress) {
-            fetchEthereumBalance(); // Fetch Ethereum balance when connectedWalletAddress is available
-        }
-    }, [connectedWalletAddress]);
+    // useEffect(() => {
+    //     if (connectedWalletAddress) {
+    //         fetchEthereumBalance(); // Fetch Ethereum balance when connectedWalletAddress is available
+    //     }
+    // }, [connectedWalletAddress]);
 
     const changeDropState = () => {
         setDrop(!drop);
     }
 
-    const setCurrency = async (idx) => {
-        setCurrencyState(idx);
-        setDrop(false)
-        if (currencies[idx] === usdtConstant) {
-            await fetchUsdtBalance();
-            setSaleCryptoAmount(usdtBalance)
-        }
-        if (currencies[idx] === ethereumConstant) {
-            await fetchEthereumBalance();
-            setSaleCryptoAmount(ethereumBalance)
-        }
-    }
+    // const setCurrency = async (idx) => {
+    //     setCurrencyState(idx);
+    //     setDrop(false)
+    //     if (currencies[idx] === usdtConstant) {
+    //         await fetchUsdtBalance();
+    //         setSaleCryptoAmount(usdtBalance)
+    //     }
+    //     if (currencies[idx] === ethereumConstant) {
+    //         await fetchEthereumBalance();
+    //         setSaleCryptoAmount(ethereumBalance)
+    //     }
+    // }
 
     // useWaitForTransaction({
     //     hash: txHash,
@@ -364,7 +401,7 @@ function Presale() {
     // })
 
     const handleAction = async () => {
-        if (connectedWalletAddress == undefined) return;
+        if (isConnectedWallet() == false) return;
         if (preSaleState == PreSaleStateVal.Open) {
             /*
             if (currencies[currencyState] == usdtConstant) 
@@ -480,33 +517,30 @@ function Presale() {
         setSaleCryptoAmount(currencies[currencyState] == ethereumConstant ? ethereumBalance : usdtBalance)
     }
 
-    const changeValue = (e) => {
-        const val = e.target.value;
-
-        if (currencies[currencyState] == ethereumConstant) {
-            if (parseFloat(val) > ethereumBalance) {
-                toast.error("Balance is " + ethereumBalance);
-                return;
-            }
-        }
-        else {
-            if (parseFloat(val) > usdtBalance) {
-                toast.error("Balance is " + usdtBalance);
-                return;
-            }
-        }
-
-        setSaleCryptoAmount(parseFloat(val));
+    const onChangeSaleCryptoAmount = (event) => {
+        // let amount = parseFloat(event.target.value);
+        // if (isNaN(amount) == true) {
+        //     amount = 0;
+        // }
+        // if (amount < 0) {
+        //     amount = 0;
+        // }
+        // if (amount > saleCryptoBalance) {
+        //     amount = saleCryptoBalance;
+        // }
+        // setSaleCryptoAmount(amount);
     }
 
     const onClickCurrencyETH = () => {
         document.getElementById("mint_currency_button_usdt").classList.remove("selected");
         document.getElementById("mint_currency_button_eth").classList.add("selected");
+        setSaleCryptoType(CRYPTO_TYPE.ETH);
     }
 
     const onClickCurrencyUSDT = () => {
         document.getElementById("mint_currency_button_usdt").classList.add("selected");
         document.getElementById("mint_currency_button_eth").classList.remove("selected");
+        setSaleCryptoType(CRYPTO_TYPE.USDT);
     }
 
     const getPreSaleAbleAmount = () => {
@@ -553,7 +587,7 @@ function Presale() {
                                     <div className="mint_currency_select">
                                         <button 
                                             id="mint_currency_button_eth"
-                                            className="currency_type"
+                                            className={saleCryptoType == CRYPTO_TYPE.ETH ? "currency_type selected" : "currency_type"}
                                             onClick={onClickCurrencyETH}
                                         >
                                             <img src={IconEther} />
@@ -561,7 +595,7 @@ function Presale() {
                                         </button>
                                         <button 
                                             id="mint_currency_button_usdt"
-                                            className="mint_currency_button currency_type"
+                                            className={saleCryptoType == CRYPTO_TYPE.USDT ? "currency_type selected" : "currency_type"}
                                             onClick={onClickCurrencyUSDT}
                                         >
                                             <img src={IconUSDT} />
@@ -575,10 +609,23 @@ function Presale() {
                                     :
                                     <div className="mint_currency_panel">
                                         <div className="mint_currency_pay">
-                                            <span>
-                                                USDT you pay
-                                            </span>
-                                            <input type="text">
+                                            {
+                                                saleCryptoType == CRYPTO_TYPE.ETH ?
+                                                <span>
+                                                    ETH you pay
+                                                </span>
+                                                :
+                                                <span>
+                                                    USDT you pay
+                                                </span>
+                                            }
+                                            <input 
+                                                type="number"
+                                                inputMode="decimal"
+                                                placeholder="0.00"
+                                                value={saleCryptoAmount}
+                                                onChange={onChangeSaleCryptoAmount}
+                                            >
                                             </input>
                                         </div>
                                         <div className="mint_currency_receive">
