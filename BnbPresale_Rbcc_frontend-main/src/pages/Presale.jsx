@@ -17,12 +17,13 @@ import "react-sweet-progress/lib/style.css";
 function Presale() 
 {
     const { address } = useAccount();
-    console.log("address = ", address);
+	let connectedWalletAddress = address;
+    console.log("connectedWalletAddress = ", connectedWalletAddress);
 
     const chainId = useChainId()
     console.log("chainId = ", chainId);
 
-    // const { data: accountBalance } = useBalance({ address, watch: true })
+    // const { data: accountBalance } = useBalance({ connectedWalletAddress, watch: true })
     // const [startTime, setStartTime] = useState(0);
     // const [endTime, setEndTime] = useState(0);
     const [softCap, setSoftCap] = useState(0);
@@ -52,20 +53,21 @@ function Presale()
     const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
     
     const ETHER_DECIMAL = 1000000000000000000;
+    // const ETHER_DECIMAL = 1000000000;
     const USDT_DECIMAL = 1000000;
     const RBCC_DECIMAL = 100000000;
 	const USDT_PER_ETHER = 2000;
 	const USDT_PER_RBCC = 10;
 
-    const web3 = new Web3(window.ethereum)
-
+    const defaultWeb3 = new Web3(window.ethereum)
     const usdtToken = "0xFdf8062Ad4D57F1539D122231A2b189cfc58a955";
-    const usdtContract = new web3.eth.Contract(USDTAbi, usdtToken);
+    const usdtContract = new defaultWeb3.eth.Contract(USDTAbi, usdtToken);
     
     const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
     const [buyRbccAmount, setBuyRbccAmount] = useState(0);
 
     useEffect(() => {
+		console.log("saleCryptoAmount = " + saleCryptoAmount);
 		let cryptoAmount = saleCryptoAmount;
 		if (currencies[currencyState] == ethereumConstant) 
 		{
@@ -121,7 +123,7 @@ function Presale()
 			{
 				...getPresaleContract(chainId),
 				functionName: "getAddressBought",
-				args: address != undefined ? [address] : [],
+				args: connectedWalletAddress != undefined ? [connectedWalletAddress] : [],
 			},
 		]
 	})
@@ -213,13 +215,14 @@ function Presale()
     })
 
     const fetchUsdtBalance = async () => {
-		if (address == undefined) return;
+		if (connectedWalletAddress == undefined) return;
         try {
-            let balance = await usdtContract.methods.balanceOf(address).call();
-			console.log("balance = " + balance);
+            let balance = await usdtContract.methods.balanceOf(connectedWalletAddress).call();
+			// console.log("balance = " + balance);
 			balance = Number(balance) / Number(USDT_DECIMAL);
 			console.log("balance = " + balance);
             setUsdtBalance(balance);
+			setSaleCryptoAmount(balance);
         } catch (error) {
             console.error("Error fetching USDT balance:", error);
             setUsdtBalance(0);
@@ -227,13 +230,18 @@ function Presale()
     };
 
     const fetchEthereumBalance = async () => { // New function to fetch Ethereum balance
-		if (address == undefined) return;
+		if (connectedWalletAddress == undefined) return;
         try {
-            let balance = await web3.eth.getBalance(address);
-			console.log("balance = " + balance);
+			// const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
+			const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+			// const web3 = new Web3(window.ethereum)
+
+            let balance = await web3.eth.getBalance(connectedWalletAddress);
+			// console.log("balance = " + balance);
 			balance = Number(balance) / Number(ETHER_DECIMAL);
 			console.log("balance = " + balance);
             setEthereumBalance(balance);
+			setSaleCryptoAmount(balance);
         } catch (error) {
             console.error("Error fetching Ethereum balance:", error);
             setEthereumBalance(0);
@@ -241,10 +249,10 @@ function Presale()
     };
 
     useEffect(() => {
-        if (address) {
-            fetchEthereumBalance(); // Fetch Ethereum balance when address is available
+        if (connectedWalletAddress) {
+            fetchEthereumBalance(); // Fetch Ethereum balance when connectedWalletAddress is available
         }
-    }, [address]);
+    }, [connectedWalletAddress]);
 
     const changeDropState = () => {
         setDrop(!drop);
@@ -276,7 +284,7 @@ function Presale()
     // })
 
     const handleAction = async () => {
-		if (address == undefined) return;
+		if (connectedWalletAddress == undefined) return;
         if (preSaleState == PreSaleStateVal.Open) 
         {
 			/*
@@ -303,23 +311,62 @@ function Presale()
             let presaleContractAddress = PresaleContract.address[chainId];
             if (currencies[currencyState] == ethereumConstant) 
             {
-                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL);
-                web3.eth.methods.transfer(presaleContractAddress, weiValue);                
-                buyWithEther({
-                    args: [],
-                    from: address,
-                    value: weiValue
-                });
+				// const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
+				const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+				// const web3 = new Web3(window.ethereum)
+
+                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
+				// web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
+				// 	from: connectedWalletAddress
+				// });
+
+				try {
+					const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
+					const gasPrice = await web3.eth.getGasPrice();
+					const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
+
+					const tx = {
+						from: connectedWalletAddress,
+						to: presaleContractAddress,
+						value: weiValue,
+						gas: 21000,  // Estimated gas limit for a simple transaction
+						gasPrice: gasPrice,
+						nonce: nonce,
+						chainId: 17000,					
+					};
+					
+					// Sign the transaction
+					const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+					await web3.eth.sendTransaction(signedTx.rawTransaction);
+
+					// await web3.eth.sendTransaction(tx);
+
+					// buyWithEther({
+					// 	args: [],
+					// 	from: connectedWalletAddress,
+					// 	value: weiValue
+					// });
+
+				} catch (err) {
+					console.log(`error with ${err}`);
+				}
             }
             else 
             {
-                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL);
-                await usdtContract.methods.transfer(presaleContractAddress, weiValue);
-                buyTokensWithUSDT({
-                    args: [],
-                    from: address,
-                    value: weiValue
-                });
+				try {
+					const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
+					await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
+						from: connectedWalletAddress
+					});
+					
+					buyTokensWithUSDT({
+					    args: [],
+					    from: connectedWalletAddress,
+					    value: weiValue
+					});
+				} catch(err) {
+					console.log(`error with ${err}`);
+				}
             }
 
             setPendingTx(false);
@@ -332,7 +379,7 @@ function Presale()
             {
                 claimRbcc({
                     args: [],
-                    from: address,
+                    from: connectedWalletAddress,
                 });
 
 				setClaimAmount(0);
@@ -347,7 +394,7 @@ function Presale()
 
 			Refund({
 				args: [],
-				from: address
+				from: connectedWalletAddress
 			});
 
 			setPendingTx(false);
