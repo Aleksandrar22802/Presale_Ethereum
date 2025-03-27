@@ -23,7 +23,7 @@ export const getContractResult = (result, decimals = 18) => {
 };
 
 export const getFormattedDisplayNumber = (val, decimals = 3) => {
-	console.log('getFormattedDisplayNumber--', val);
+	// console.log('getFormattedDisplayNumber--', val);
 	return Number(Number.parseFloat(val).toFixed(decimals));
 };
 

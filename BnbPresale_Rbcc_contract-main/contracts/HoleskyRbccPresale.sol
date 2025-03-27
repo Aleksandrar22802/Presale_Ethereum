@@ -86,7 +86,7 @@ contract HoleskyRbccPresale {
         _rbccToken.approve(address(this), _limitRbccForPresale * RBCC_DECIMAL);
 
         _maxRbccPerWallet = 10000 / _pricePerRbcc; // amount for 10000 $
-        _minRbccPerWallet = 50 / _pricePerRbcc; // amount for 50 $
+        _minRbccPerWallet = 0 / _pricePerRbcc; // amount for 0 $
     }
 
     /**
@@ -125,6 +125,8 @@ contract HoleskyRbccPresale {
         uint256 etherAmount = msg.value;
 
         uint256 currentInvestmentUSDT = (_walletsInvestmentEther[msg.sender] * _pricePerEther / ETHER_DECIMAL) + (_walletsInvestmentUSDT[msg.sender] / USDT_DECIMAL);
+        // uint256 currentInvestmentUSDT = (_totalEther * _pricePerEther / ETHER_DECIMAL) + (_totalUSDT / USDT_DECIMAL);
+        
         uint256 calcInvestmentUSDT = currentInvestmentUSDT + (etherAmount * _pricePerEther / ETHER_DECIMAL);
         uint256 calcInvestmentRbcc = calcInvestmentUSDT / _pricePerRbcc;
         require(
@@ -157,6 +159,8 @@ contract HoleskyRbccPresale {
         uint256 usdtAmount = msg.value;
 
         uint256 currentInvestmentUSDT = (_walletsInvestmentEther[msg.sender] * _pricePerEther / ETHER_DECIMAL) + (_walletsInvestmentUSDT[msg.sender] / USDT_DECIMAL);
+        // uint256 currentInvestmentUSDT = (_totalEther * _pricePerEther / ETHER_DECIMAL) + (_totalUSDT / USDT_DECIMAL);
+
         uint256 calcInvestmentUSDT = currentInvestmentUSDT + (usdtAmount / USDT_DECIMAL);
         uint256 calcInvestmentRbcc = calcInvestmentUSDT / _pricePerRbcc;
         require(

@@ -87,8 +87,8 @@ function Presale() {
     const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
 
     const [drop, setDrop] = useState(false);
-    const [usdtBalance, setUsdtBalance] = useState(0);
-    const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
+    // const [usdtBalance, setUsdtBalance] = useState(0);
+    // const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
 
     const ETHER_DECIMAL = 1000000000000000000;
     // const ETHER_DECIMAL = 1000000000;
@@ -106,13 +106,14 @@ function Presale() {
     useEffect(() => {
         // console.log("saleCryptoAmount = " + saleCryptoAmount);
         let cryptoAmount = saleCryptoAmount;
-        if (currencies[currencyState] == ethereumConstant) {
+        if (saleCryptoType == CRYPTO_TYPE.ETH) {
             // ETHER => USDT
             cryptoAmount = cryptoAmount * USDT_PER_ETHER;
             // USDT => RBCC
             cryptoAmount = cryptoAmount / USDT_PER_RBCC;
         }
-        else {
+        else 
+        {
             // USDT => RBCC
             cryptoAmount = cryptoAmount / USDT_PER_RBCC;
         }
@@ -242,7 +243,7 @@ function Presale() {
         }
     }, [remainingTime])
 
-    const [boughtAmount, setBoughtAmount] = useState(0);
+    const [myBoughtAmount, setMyBoughtAmount] = useState(0);
 
     const { data: addressBoughtResult } = useContractReads({
         contracts: [
@@ -257,13 +258,13 @@ function Presale() {
     useEffect(() => {
         if (isConnectedWallet() == false)
         {
-            setBoughtAmount(0);
+            setMyBoughtAmount(0);
             return;
         }
 
         if (!addressBoughtResult || addressBoughtResult == undefined)
         {
-            setBoughtAmount(0);
+            setMyBoughtAmount(0);
             return;
         }
 
@@ -271,13 +272,50 @@ function Presale() {
         if (addressBoughtResult[0].result !== undefined) 
         {
             const rbccValue = BigNumber(addressBoughtResult[0].result).dividedBy(RBCC_DECIMAL).toNumber();
-            setBoughtAmount(rbccValue);
+            setMyBoughtAmount(rbccValue);
         } 
         else 
         {
-            setBoughtAmount(0);
+            setMyBoughtAmount(0);
         }
     }, [addressBoughtResult]);
+
+    const [totalBoughtAmount, setTotalBoughtAmount] = useState(0);
+
+    const { data: totalBoughtResult } = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getTotalSold",
+                args: [],
+            },
+        ]
+    })
+
+    useEffect(() => {
+        if (isConnectedWallet() == false)
+        {
+            setTotalBoughtAmount(0);
+            return;
+        }
+
+        if (!totalBoughtResult || totalBoughtResult == undefined)
+        {
+            setTotalBoughtAmount(0);
+            return;
+        }
+
+        console.log("totalBoughtResult - ", totalBoughtResult)
+        if (totalBoughtResult[0].result !== undefined) 
+        {
+            const rbccValue = BigNumber(totalBoughtResult[0].result).dividedBy(RBCC_DECIMAL).toNumber();
+            setTotalBoughtAmount(rbccValue);
+        } 
+        else 
+        {
+            setTotalBoughtAmount(0);
+        }
+    }, [totalBoughtResult]);
 
     const { writeAsync: buyWithEther } = useContractWrite({
         ...getPresaleContract(chainId),
@@ -513,22 +551,22 @@ function Presale() {
         }
     }
 
-    const setInputMax = () => {
-        setSaleCryptoAmount(currencies[currencyState] == ethereumConstant ? ethereumBalance : usdtBalance)
-    }
+    // const setInputMax = () => {
+    //     setSaleCryptoAmount(currencies[currencyState] == ethereumConstant ? ethereumBalance : usdtBalance)
+    // }
 
     const onChangeSaleCryptoAmount = (event) => {
-        // let amount = parseFloat(event.target.value);
-        // if (isNaN(amount) == true) {
-        //     amount = 0;
-        // }
-        // if (amount < 0) {
-        //     amount = 0;
-        // }
-        // if (amount > saleCryptoBalance) {
-        //     amount = saleCryptoBalance;
-        // }
-        // setSaleCryptoAmount(amount);
+        let amount = parseFloat(event.target.value);
+        if (isNaN(amount) == true) {
+            amount = 0;
+        }
+        if (amount < 0) {
+            amount = 0;
+        }
+        if (amount > saleCryptoBalance) {
+            amount = saleCryptoBalance;
+        }
+        setSaleCryptoAmount(amount);
     }
 
     const onClickCurrencyETH = () => {
@@ -544,7 +582,7 @@ function Presale() {
     }
 
     const getPreSaleAbleAmount = () => {
-        return (limitForPresale - boughtAmount);
+        return (limitForPresale - totalBoughtAmount);
     }
 
     return (
@@ -570,10 +608,20 @@ function Presale() {
                                         isConnectedWallet() == false ? 
                                             "Please connect wallet." 
                                             : 
-                                            "Expected Tokens : " + getPreSaleAbleAmount()
+                                            "Pool Tokens : " + getPreSaleAbleAmount()
                                     }
                                 </span>
                             </div>
+                            {
+                                isConnectedWallet() == false ?
+                                    ""
+                                    :
+                                    <div className="mint_state text-center">
+                                        <span>
+                                            My Tokens : {myBoughtAmount}
+                                        </span>
+                                    </div>
+                            }
                             {
                                 isConnectedWallet() == false ?
                                     ""
@@ -633,7 +681,7 @@ function Presale() {
                                                 Rbcc you receive
                                             </span>
                                             <div className="content">
-                                                <span>10</span>
+                                                <span>{buyRbccAmount}</span>
                                                 <img src={IconRbcc} />
                                             </div>
                                         </div>
