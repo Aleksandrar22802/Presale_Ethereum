@@ -1,6 +1,8 @@
 /%-----------------------------------------------------------------------------------%/
 --- Deply Command ---
-npx hardhat run deploy/deployRbccPresale.js --network  holeskyTestnet
+npx hardhat run deploy/deployHoleskyRbccCoin.js --network  holeskyTestnet
+npx hardhat run deploy/deployHoleskyRbccPresale.js --network  holeskyTestnet
+npx hardhat run deploy/deployHoleskyUSDTCoin.js --network  holeskyTestnet
 
 
 /&----------------------------------------------------------&/
@@ -45,11 +47,11 @@ https://holesky.etherscan.io/address/0x45f3A831cf3B4b45941546807B061699124b1e51
 PreSale 
 
 Contract Address = 
-0x448d908920C676D3Db99fc3FEc5865E2EB829C34
+0x83336844a6E1aE3ef1e4793ef30a1e8B996f5686
 
 Creater Address = 
 0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4
 
-npx hardhat verify --contract contracts/HoleskyRbccPresale.sol:HoleskyRbccPresale 0x448d908920C676D3Db99fc3FEc5865E2EB829C34 0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4 0xFdf8062Ad4D57F1539D122231A2b189cfc58a955 0x45f3A831cf3B4b45941546807B061699124b1e51 0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4 --network holeskyTestnet 
+npx hardhat verify --contract contracts/HoleskyRbccPresale.sol:HoleskyRbccPresale 0x83336844a6E1aE3ef1e4793ef30a1e8B996f5686 0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4 0xFdf8062Ad4D57F1539D122231A2b189cfc58a955 0x45f3A831cf3B4b45941546807B061699124b1e51 0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4 --network holeskyTestnet 
 
-https://holesky.etherscan.io/address/0x448d908920C676D3Db99fc3FEc5865E2EB829C34
+https://holesky.etherscan.io/address/0x83336844a6E1aE3ef1e4793ef30a1e8B996f5686

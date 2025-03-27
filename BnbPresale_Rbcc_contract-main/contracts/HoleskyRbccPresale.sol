@@ -179,13 +179,18 @@ contract HoleskyRbccPresale {
         uint256 etherAmount,
         uint256 usdtAmount,
         uint256 rbccAmount
-    ) private {
+    ) private {        
+        require(
+            _limitRbccForPresale * RBCC_DECIMAL >= rbccAmount + _totalSold,
+            "The Rbcc amount on the contract is insufficient."
+        );
+        /*
         require(
             _rbccToken.balanceOf(address(this)) >= rbccAmount + _totalSold,
             "The Rbcc amount on the contract is insufficient."
         );
-
         emit SoldRbcc(etherAmount, usdtAmount, rbccAmount, _pricePerRbcc);
+        */
 
         _walletsInvestmentEther[msg.sender] += etherAmount;
         _walletsInvestmentUSDT[msg.sender] += usdtAmount;
@@ -211,10 +216,12 @@ contract HoleskyRbccPresale {
 
         // this value is in wei unit
         uint256 rbccAmount = _walletsRbccAmount[msg.sender];
+        /*
         require(
             _rbccToken.balanceOf(address(this)) >= rbccAmount,
             "The RBCC amount on the contract is insufficient."
         );
+        */
 
         // _rbccToken.transfer(msg.sender, rbccAmount);
         _rbccToken.transferFrom(address(this), msg.sender, rbccAmount);
