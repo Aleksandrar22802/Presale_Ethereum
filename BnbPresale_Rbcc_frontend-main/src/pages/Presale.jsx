@@ -23,6 +23,15 @@ function Presale() {
     const { address } = useAccount();
     let connectedWalletAddress = address;
     console.log("connectedWalletAddress = ", connectedWalletAddress);
+    const isConnectedWallet = () => {
+        if (connectedWalletAddress != undefined) 
+        {
+            // console.log("wallet connected");
+            return true;
+        }
+        // console.log("wallet is'nt connected");
+        return false;
+    }
 
     const chainId = useChainId()
     console.log("chainId = ", chainId);
@@ -30,19 +39,21 @@ function Presale() {
     // const { data: accountBalance } = useBalance({ connectedWalletAddress, watch: true })
     // const [startTime, setStartTime] = useState(0);
     // const [endTime, setEndTime] = useState(0);
-    const [softCap, setSoftCap] = useState(0);
-    const [hardCap, setHardCap] = useState(0);
-    const [minAmount, setMinAmount] = useState(0)
-    const [maxAmount, setMaxAmount] = useState(0)
-    const [presaleRate, setPresaleRate] = useState(0)
-    const [listingRate, setListingRate] = useState(0)
-    const [totalDepositedEthAmount, setTotalDepositedEthAmount] = useState(0);
-    const [totalSellingTokenAmount, setTotalSellingTokenAmount] = useState(0);
-    const [userDepositEthAmount, setUserDepositEthAmount] = useState(0);
+
+    // const [softCap, setSoftCap] = useState(0);
+    // const [hardCap, setHardCap] = useState(0);
+    // const [minAmount, setMinAmount] = useState(0)
+    // const [maxAmount, setMaxAmount] = useState(0)
+    // const [presaleRate, setPresaleRate] = useState(0)
+    // const [listingRate, setListingRate] = useState(0)
+    // const [totalDepositedEthAmount, setTotalDepositedEthAmount] = useState(0);
+    // const [totalSellingTokenAmount, setTotalSellingTokenAmount] = useState(0);
+    // const [userDepositEthAmount, setUserDepositEthAmount] = useState(0);
+    // const [totalSupply, setTotalSupply] = useState(0)
+    // const refAmount = useRef(null)
+    // const token_price = 0.0004
+
     const [counterDeadline, setCounterDeadline] = useState(0);
-    const [totalSupply, setTotalSupply] = useState(0)
-    const refAmount = useRef(null)
-    const token_price = 0.0004
 
     const ethereumConstant = "Ethereum";
     const usdtConstant = "USDT";
@@ -51,7 +62,6 @@ function Presale() {
     const [currencyState, setCurrencyState] = useState(0)
 
     const [remainingTime, setRemainingTime] = useState(0);
-    const [claimAmount, setClaimAmount] = useState(0);
     const [drop, setDrop] = useState(false);
     const [usdtBalance, setUsdtBalance] = useState(0);
     const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
@@ -110,7 +120,40 @@ function Presale() {
     // const [txHash, setTxHash] = useState(null)
     const [pendingTx, setPendingTx] = useState(false);
 
-    const { data: remainingTimeResult/*, refetch: refetchContracts*/ } = useContractReads({
+    const [limitForPresale, setLimitForPresale] = useState(0);
+
+    const { data: limitForPresaleResult } = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getLimitForPresale",
+                args: [],
+            },
+        ]
+    })
+
+    useEffect(() => {
+        if (isConnectedWallet() == false)
+        {
+            setLimitForPresale(0);
+            return;
+        }
+
+        if (!limitForPresaleResult || limitForPresaleResult == undefined) 
+        {
+            setLimitForPresale(0);
+            return;
+        }
+
+        console.log("limitForPresaleResult - ", limitForPresaleResult)
+        if (limitForPresaleResult[0].result != undefined) {
+            setLimitForPresale(getFormattedUnits(limitForPresaleResult[0].result));
+        } else {
+            setLimitForPresale(0);
+        }
+    }, [limitForPresaleResult])
+
+    const { data: remainingTimeResult } = useContractReads({
         contracts: [
             {
                 ...getPresaleContract(chainId),
@@ -120,18 +163,18 @@ function Presale() {
         ]
     })
 
-    const { data: boughtResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getAddressBought",
-                args: connectedWalletAddress != undefined ? [connectedWalletAddress] : [],
-            },
-        ]
-    })
-
     useEffect(() => {
-        if (!remainingTimeResult) return
+        if (isConnectedWallet() == false)
+        {
+            setRemainingTime(0);
+            return;
+        }
+
+        if (!remainingTimeResult || remainingTimeResult == undefined) 
+        {
+            setRemainingTime(0);
+            return;
+        }
 
         console.log("remainingTimeResult - ", remainingTimeResult)
         if (remainingTimeResult[0].result != undefined) {
@@ -142,34 +185,74 @@ function Presale() {
     }, [remainingTimeResult])
 
     useEffect(() => {
-        if (remainingTimeResult) {
-            console.log("remainingTime--", remainingTime)
-            const timerId = setInterval(() => {
-                if (parseInt(remainingTime) > 0) {
-                    setCounterDeadline(remainingTime * 1000)
-                    setPreSaleState(PreSaleStateVal.Open)
-                }
-                else {
-                    setCounterDeadline(0)
-                    setPreSaleState(PreSaleStateVal.End)
-                }
-            }, 1000);
-            return () => {
-                clearInterval(timerId);
-            }
+        if (isConnectedWallet() == false)
+        {
+            setCounterDeadline(0)
+            setPreSaleState(PreSaleStateVal.End)
+            return;
         }
-    }, [remainingTime/*, startTime, endTime*/])
+
+        if (!remainingTimeResult || remainingTimeResult == undefined) 
+        {
+            setCounterDeadline(0)
+            setPreSaleState(PreSaleStateVal.End)
+            return;
+        }
+
+        console.log("remainingTime--", remainingTime)
+        const timerId = setInterval(() => {
+            if (parseInt(remainingTime) > 0) 
+            {
+                setCounterDeadline(remainingTime * 1000)
+                setPreSaleState(PreSaleStateVal.Open)
+            }
+            else 
+            {
+                setCounterDeadline(0)
+                setPreSaleState(PreSaleStateVal.End)
+            }
+        }, 1000);
+        return () => {
+            clearInterval(timerId);
+        }
+    }, [remainingTime])
+
+    const [boughtAmount, setBoughtAmount] = useState(0);
+
+    const { data: addressBoughtResult } = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getAddressBought",
+                args: isConnectedWallet() == true ? [connectedWalletAddress] : [],
+            },
+        ]
+    })
 
     useEffect(() => {
-        if (!boughtResult) return
-
-        console.log("boughtResult - ", boughtResult)
-        if (boughtResult !== undefined) {
-            setClaimAmount(boughtResult[0].result);
-        } else {
-            setClaimAmount(0);
+        if (isConnectedWallet() == false)
+        {
+            setBoughtAmount(0);
+            return;
         }
-    }, [boughtResult]);
+
+        if (!addressBoughtResult || addressBoughtResult == undefined)
+        {
+            setBoughtAmount(0);
+            return;
+        }
+
+        console.log("addressBoughtResult - ", addressBoughtResult)
+        if (addressBoughtResult[0].result !== undefined) 
+        {
+            const rbccValue = BigNumber(addressBoughtResult[0].result).dividedBy(RBCC_DECIMAL).toNumber();
+            setBoughtAmount(rbccValue);
+        } 
+        else 
+        {
+            setBoughtAmount(0);
+        }
+    }, [addressBoughtResult]);
 
     const { writeAsync: buyWithEther } = useContractWrite({
         ...getPresaleContract(chainId),
@@ -426,6 +509,10 @@ function Presale() {
         document.getElementById("mint_currency_button_eth").classList.remove("selected");
     }
 
+    const getPreSaleAbleAmount = () => {
+        return (limitForPresale - boughtAmount);
+    }
+
     return (
         <>
             <div className="mint_container">
@@ -435,34 +522,6 @@ function Presale() {
                     <div className="dsc_content title-36 text-center">Rbcc coin plays a crucial role in our project ecosystem. By participating in our Rbcc coin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
                     <div className="margin_bottom"></div>
                 </div>
-                {/* <section className="w-full top-padding md:flex items-center justify-center gap-[1vw] md:gap-[10vw] md:!mt-[60px] !mt-[60px] flex flex-wrap">
-                    <div className="caelum-paper py-[20px] px-[50px] mb-[30px] !border-[#fff] w-[530px]">
-                        <div className="flex items-center justify-between w-full mb-3">
-                            <div className="text-center title-20 caelum-text1">Presale Rate</div>
-                            <div className="title-20"> 0.0004 USDT / Rbcc</div>
-                        </div>
-                        <div className="flex items-center justify-between w-full mb-3">
-                            <div className="text-center title-20 caelum-text1">Listing Rate</div>
-                            <div className="title-20"> 0.0008 USDT / Rbcc</div>
-                        </div>
-                        <div className="flex items-center justify-between w-full mb-3">
-                            <div className="text-center title-20 caelum-text1">Min Contribution</div>
-                            <div className="title-20">50 USDT</div>
-                        </div>
-                        <div className="flex items-center justify-between w-full mb-3">
-                            <div className="text-center title-20 caelum-text1">Max Contribution</div>
-                            <div className="title-20">10000 USDT</div>
-                        </div>
-                        <div className="flex items-center justify-between w-full mb-3">
-                            <div className="text-center title-20 caelum-text1">Initial Supply</div>
-                            <div className="title-20">3,000,000,000 Rbcc</div>
-                        </div>
-                        <div className="flex items-center justify-between w-full mb-3">
-                            <div className="text-center title-20 caelum-text1">Tokens For Presale</div>
-                            <div className="title-20">1,000,000,000 Rbcc</div>
-                        </div>
-                    </div>
-                </section> */}
                 <div className="mint_pane">
                     <div className="mint_wrapper">
                         <div className="mint_content">
@@ -471,58 +530,86 @@ function Presale() {
                                 <img src={IconMint} />
                                 </div>
                             {/* <div className="mint_state text-center">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div> */}
-                            <div className="mint_state text-center">Expected Tokens : </div>
-                            <CountDown end={counterDeadline} />
-                            <div className="mint_currency_select">
-                                <button 
-                                    id="mint_currency_button_eth"
-                                    className="currency_type"
-                                    onClick={onClickCurrencyETH}
-                                >
-                                    <img src={IconEther} />
-                                    <span>ETH</span>
-                                </button>
-                                <button 
-                                    id="mint_currency_button_usdt"
-                                    className="mint_currency_button currency_type"
-                                    onClick={onClickCurrencyUSDT}
-                                >
-                                    <img src={IconUSDT} />
-                                    <span>USDT</span>
-                                </button>
+                            <div className="mint_state text-center">
+                                <span>
+                                    {
+                                        isConnectedWallet() == false ? 
+                                            "Please connect wallet." 
+                                            : 
+                                            "Expected Tokens : " + getPreSaleAbleAmount()
+                                    }
+                                </span>
                             </div>
-
-                            <div className="mint_currency_panel">
-                                <div className="mint_currency_pay">
-                                    <span>
-                                        USDT you pay
-                                    </span>
-                                    <input type="text">
-                                    </input>
-                                </div>
-                                <div className="mint_currency_receive">
-                                    <span className="title">
-                                        Rbcc you receive
-                                    </span>
-                                    <div className="content">
-                                        <span>10</span>
-                                        <img src={IconRbcc} />
+                            {
+                                isConnectedWallet() == false ?
+                                    ""
+                                    :
+                                    <CountDown end={counterDeadline} />
+                            }
+                            {
+                                isConnectedWallet() == false ?
+                                    ""
+                                    :
+                                    <div className="mint_currency_select">
+                                        <button 
+                                            id="mint_currency_button_eth"
+                                            className="currency_type"
+                                            onClick={onClickCurrencyETH}
+                                        >
+                                            <img src={IconEther} />
+                                            <span>ETH</span>
+                                        </button>
+                                        <button 
+                                            id="mint_currency_button_usdt"
+                                            className="mint_currency_button currency_type"
+                                            onClick={onClickCurrencyUSDT}
+                                        >
+                                            <img src={IconUSDT} />
+                                            <span>USDT</span>
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
+                            }
+                            {
+                                isConnectedWallet() == false ?
+                                    ""
+                                    :
+                                    <div className="mint_currency_panel">
+                                        <div className="mint_currency_pay">
+                                            <span>
+                                                USDT you pay
+                                            </span>
+                                            <input type="text">
+                                            </input>
+                                        </div>
+                                        <div className="mint_currency_receive">
+                                            <span className="title">
+                                                Rbcc you receive
+                                            </span>
+                                            <div className="content">
+                                                <span>10</span>
+                                                <img src={IconRbcc} />
+                                            </div>
+                                        </div>
+                                    </div>
+                            }
+                            {
+                                isConnectedWallet() == false ?
+                                    ""
+                                    :
+                                    <div className="mint_currency_action">
+                                        <button 
+                                            // onClick={onClickCurrencyUSDT}
+                                        >
+                                            <span>Buy</span>
+                                        </button>
+                                        <button 
+                                            // onClick={onClickCurrencyUSDT}
+                                        >
+                                            <span>Claim</span>
+                                        </button>
+                                    </div>
+                                }
 
-                            <div className="mint_currency_action">
-                                <button 
-                                    // onClick={onClickCurrencyUSDT}
-                                >
-                                    <span>Buy</span>
-                                </button>
-                                <button 
-                                    // onClick={onClickCurrencyUSDT}
-                                >
-                                    <span>Claim</span>
-                                </button>
-                            </div>
 
                             {/* {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
                                 <section className="">
