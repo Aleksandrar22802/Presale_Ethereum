@@ -17,6 +17,12 @@ import IconEther from "../assets/icons/lp-CAL_ETH.png"
 import IconUSDT from "../assets/icons/lp-caUSD_USDC.png"
 import IconRbcc from "../assets/icons/token-LSDoge.png"
 
+import IconRemittix from "../assets/remittix/remix.com.svg"
+import IconTelegram from "../assets/remittix/telegram.svg"
+import IconMedium from "../assets/remittix/medium.svg"
+import IconLinkrEE from "../assets/remittix/linktr.ee.svg"
+
+
 import "react-sweet-progress/lib/style.css";
 
 function Presale() {
@@ -74,12 +80,10 @@ function Presale() {
         if (saleCryptoType == CRYPTO_TYPE.ETH)
         {
             fetchEthereumBalance();
-            // setSaleCryptoAmount(ethereumBalance)
         }
         else
         {            
             fetchUsdtBalance();
-            // setSaleCryptoAmount(usdtBalance)
         }
     }, [saleCryptoType])
 
@@ -317,6 +321,80 @@ function Presale() {
         }
     }, [totalBoughtResult]);
 
+    const [maxRbccPerWallet, setMaxRbccPerWallet] = useState(0);
+
+    const { data: maxRbccPerWalletResult } = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getMaxRbccPerWallet",
+                args: [],
+            },
+        ]
+    })
+
+    useEffect(() => {
+        if (isConnectedWallet() == false)
+        {
+            setMaxRbccPerWallet(0);
+            return;
+        }
+
+        if (!maxRbccPerWalletResult || maxRbccPerWalletResult == undefined)
+        {
+            setMaxRbccPerWallet(0);
+            return;
+        }
+
+        console.log("maxRbccPerWalletResult - ", maxRbccPerWalletResult)
+        if (maxRbccPerWalletResult[0].result !== undefined) 
+        {
+            const rbccValue = BigNumber(maxRbccPerWalletResult[0].result).toNumber();
+            setMaxRbccPerWallet(rbccValue);
+        } 
+        else 
+        {
+            setMaxRbccPerWallet(0);
+        }
+    }, [maxRbccPerWalletResult]);
+
+    const [minRbccPerWallet, setMinRbccPerWallet] = useState(0);
+
+    const { data: minRbccPerWalletResult } = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getMinRbccPerWallet",
+                args: [],
+            },
+        ]
+    })
+
+    useEffect(() => {
+        if (isConnectedWallet() == false)
+        {
+            setMinRbccPerWallet(0);
+            return;
+        }
+
+        if (!minRbccPerWalletResult || minRbccPerWalletResult == undefined)
+        {
+            setMinRbccPerWallet(0);
+            return;
+        }
+
+        console.log("minRbccPerWalletResult - ", minRbccPerWalletResult)
+        if (minRbccPerWalletResult[0].result !== undefined) 
+        {
+            const rbccValue = BigNumber(minRbccPerWalletResult[0].result).toNumber();
+            setMinRbccPerWallet(rbccValue);
+        } 
+        else 
+        {
+            setMinRbccPerWallet(0);
+        }
+    }, [minRbccPerWalletResult]);
+
     const { writeAsync: buyWithEther } = useContractWrite({
         ...getPresaleContract(chainId),
         functionName: "buyWithEther",
@@ -370,6 +448,7 @@ function Presale() {
         try {
             let balance = await usdtContract.methods.balanceOf(connectedWalletAddress).call();
             balance = BigNumber(balance).dividedBy(BigNumber(USDT_DECIMAL)).toNumber();
+            balance = parseFloat(parseInt(balance * 1000) / 1000);
             console.log("fetchUsdtBalance = " + balance);
             setSaleCryptoAmount(balance);
             setSaleCryptoBalance(balance);
@@ -395,6 +474,7 @@ function Presale() {
 
             let balance = await web3.eth.getBalance(connectedWalletAddress);
             balance = BigNumber(balance).dividedBy(BigNumber(ETHER_DECIMAL)).toNumber();
+            balance = parseFloat(parseInt(balance * 1000) / 1000);
             console.log("fetchEthereumBalance = " + balance);
             setSaleCryptoAmount(balance);
             setSaleCryptoBalance(balance);
@@ -585,14 +665,46 @@ function Presale() {
         return (limitForPresale - totalBoughtAmount);
     }
 
+    const getMyTokensInfo = () => {
+        return myBoughtAmount + "(" + minRbccPerWallet + "~" + maxRbccPerWallet + ")";
+    }
+
     return (
         <>
             <div className="mint_container">
                 <div className="mint_dsc">
-                    <div className="margin_top"></div>
-                    <div className="dsc_title title-64 text-center">Welcome to Rbcc-PreSale</div>
-                    <div className="dsc_content title-36 text-center">Rbcc coin plays a crucial role in our project ecosystem. By participating in our Rbcc coin presale, you can secure a portion of Robocopcoin at a discounted price. These tokens will grant you access to various features and benefits within our platform.</div>
-                    <div className="margin_bottom"></div>
+                    <div className="dsc_title">Cross-border</div>
+                    <div className="dsc_title">Payments</div>
+                    <div className="dsc_title_v1">Reinvented</div>
+                    <div className="dsc_content">
+                        Remittix enables users to pay fiat into any bank account around the world using crypto, by just simply connecting your wallet.
+                    </div>
+                    <div className="dsc_content_v1">
+                        Welcome to the PayFi revolution!
+                    </div>
+                    <div class="dsc_link_list">
+                        <div className="link_item">
+                            <a className="" target="_blank" href="https://x.com/remittix">
+                                <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_1546_4323)"><path d="M25.3763 1.54688H30.3171L19.5226 13.8853L32.2222 30.6717H22.279L14.4919 20.4895L5.57981 30.6717H0.636389L12.1827 17.4741L0 1.54822H10.1956L17.2349 10.8551L25.3763 1.54688ZM23.6431 27.7153H26.3806L8.70806 4.34887H5.77046L23.6431 27.7153Z" fill="currentColor"></path></g><defs><clipPath id="clip0_1546_4323"><rect width="32.2222" height="32.2222" fill="white"></rect></clipPath></defs></svg>                        
+                            </a>
+                        </div>
+                        <div className="link_item">
+                            <a className="" target="_blank" href="https://t.me/remittix_Portal">
+                                <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M27.7621 4.99584L3.95792 14.1751C2.33338 14.8277 2.34278 15.7339 3.65987 16.138L9.77135 18.0445L23.9115 9.12297C24.5801 8.71617 25.191 8.93501 24.6889 9.38075L13.2326 19.7201H13.2299L13.2326 19.7214L12.811 26.0208C13.4286 26.0208 13.7011 25.7376 14.0475 25.4033L17.016 22.5167L23.1906 27.0775C24.3291 27.7045 25.1467 27.3822 25.43 26.0235L29.4833 6.92112C29.8982 5.25765 28.8482 4.50446 27.7621 4.99584Z" fill="currentColor"></path></svg>                        
+                            </a>
+                        </div>
+                        <div className="link_item">
+                            <a className="" target="_blank" href="https://medium.com/@remittix">
+                                <svg width="41" height="41" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M23.1262 20.4999C23.1262 26.9299 17.9493 32.1424 11.5631 32.1424C5.17697 32.1424 0 26.9299 0 20.4999C0 14.0699 5.17697 8.85742 11.5631 8.85742C17.9492 8.85742 23.1262 14.0699 23.1262 20.4999Z" fill="currentColor"></path><path d="M35.8112 20.4999C35.8112 26.5526 33.2226 31.4592 30.0296 31.4592C26.8366 31.4592 24.248 26.5526 24.248 20.4999C24.248 14.4472 26.8366 9.54053 30.0296 9.54053C33.2227 9.54053 35.8112 14.4472 35.8112 20.4999Z" fill="currentColor"></path><path d="M40.9999 20.4998C40.9999 25.9227 40.0895 30.3189 38.9664 30.3189C37.8434 30.3189 36.9331 25.9227 36.9331 20.4998C36.9331 15.0768 37.8434 10.6807 38.9664 10.6807C40.0895 10.6807 40.9999 15.0768 40.9999 20.4998Z" fill="currentColor"></path></svg>                        
+                            </a>
+                        </div>
+                        <div className="link_item">
+                            <a className="" target="_blank" href="https://linktr.ee/remittix">
+                                <svg width="33" height="33" xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 417 512.238"><path fill="currentColor" fill-rule="nonzero" d="M171.274 344.942h74.09v167.296h-74.09V344.942zM0 173.468h126.068l-89.622-85.44 49.591-50.985 85.439 87.829V0h74.086v124.872L331 37.243l49.552 50.785-89.58 85.24H417v70.502H290.252l90.183 87.629L331 381.192 208.519 258.11 86.037 381.192l-49.591-49.591 90.218-87.631H0v-70.502z"></path></svg>                        
+                            </a>
+                        </div>
+                    </div>
+
                 </div>
                 <div className="mint_pane">
                     <div className="mint_wrapper">
@@ -618,7 +730,7 @@ function Presale() {
                                     :
                                     <div className="mint_state text-center">
                                         <span>
-                                            My Tokens : {myBoughtAmount}
+                                            My Tokens : {getMyTokensInfo()}
                                         </span>
                                     </div>
                             }

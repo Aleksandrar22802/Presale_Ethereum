@@ -9,6 +9,7 @@ import { CheckCircle, Login, Logout, ArrowDownward } from "@mui/icons-material";
 import { useAuthState } from "../context/AuthContext";
 import { useResponsiveView } from "../utils/customHooks"
 
+import logoRemittix from "../assets/remittix/logo.svg"
 import logo from "../assets/logo/logo.png"
 import IconStable from "../assets/icons/icon-stable.png"
 import ArrowDown from "../assets/icons/ArrowDown";
@@ -105,11 +106,12 @@ function Header(props) {
             <div className="logo flex-grow" onClick={() => { navigate('/') }}>
                 <Link to="/home" className="flex items-center gap-2 text-[#add8e6]">
                     <img 
-                        src={IconStable} 
-                        alt={logo}
+                        // src={IconStable} 
+                        // alt={logo}
+                        src={logoRemittix} 
                     />
                     <span>
-                        Rbcc-PreSale
+                        Remittix
                     </span>
                 </Link>
             </div>

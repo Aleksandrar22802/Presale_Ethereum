@@ -19,7 +19,7 @@
     flex-direction: column;
     flex-wrap: no-wrap;
     justify-content: space-around;
-    align-items: center;
+    align-items: flex-start;
 
     // border-style: solid;
     // border-width: 1px;
@@ -31,22 +31,97 @@
     //   border-color: red;
     // }
 
+    margin-bottom: 50px;
+
     .dsc_title {
+      // color: rgb(249, 255, 56);
+      color: rgb(255, 255, 255);
+      text-align: left;
+      font-size: 80px;
+      line-height: 100px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .dsc_title_v1 {
       color: rgb(249, 255, 56);
+      // color: rgb(255, 255, 255);
+      text-align: left;
+      font-size: 80px;
+      line-height: 100px;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
 
     .dsc_content {
-      text-align: justify;
+      text-align: left;
       color: rgb(255, 255, 255);
+      font-size: 24px;
+      line-height: 36px;
     }
 
-    .margin_top,
-    .margin_bottom {
-      min-height: 100px !important;
+    .dsc_content_v1 {
+      text-align: left;
+      color: rgb(249, 255, 56);
+      font-size: 24px;
+      line-height: 36px;
+    }
+
+    .dsc_link_list {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
 
       // border-style: solid;
-      // border-width: 10px;
-      // border-color: red;
+      // border-width: 1px;
+      // border-color: blue;
+
+      .link_item {
+        display: flex;
+        justify-content: center;
+        align-items: default;
+
+        margin-right: 20px;
+
+        // border-style: solid;
+        // border-width: 1px;
+        // border-color: blue;
+
+        & a {
+          width: 50px;
+          height: 50px;
+
+          // border-style: solid;
+          // border-width: 1px;
+          // border-color: red;
+
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: default;
+            
+          & svg {
+            // border-style: solid;
+            // border-width: 1px;
+            // border-color: white;
+
+            margin: auto;
+            margin-top: auto;    
+            margin-bottom: auto;
+            
+            width: 30px;
+            height: 30px;
+            color: rgb(255, 255, 255);
+            &:hover {
+              width: 35px;
+              height: 35px;
+              color: rgb(230, 230, 230);
+            }
+          }
+        }
+  
+      }
     }
 
     padding-left: 50px;
@@ -215,6 +290,7 @@
             & input {
               width: 100% !important;
               height: 50px;
+              max-width: 220px !important;
               background-color: rgba(20, 20, 20, 50);
 
               border-style: solid;
@@ -252,6 +328,7 @@
             & div.content {
               width: 100% !important;
               height: 50px;
+              max-width: 220px !important;
               background-color: rgba(20, 20, 20, 50);
 
               border-style: solid;
