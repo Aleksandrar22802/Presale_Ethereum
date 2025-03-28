@@ -116,25 +116,22 @@ function Presale() {
     const [limitForPresale, setLimitForPresale] = useState(0);
 
     const [limitForPresaleResult, setLimitForPresaleResult] = useState(null);
-    const getLimitForPresale = () => {
-        useContractReads({
-            contracts: [
-                {
-                    ...getPresaleContract(chainId),
-                    functionName: "getLimitForPresale",
-                    args: [],
-                },
-            ],
-            onSuccess(data) {
-                setLimitForPresaleResult(data);
-            },            
-            onError: (error) => {
-                toast.error(getErrorMessage(error))
-                setLimitForPresaleResult(null);
+    const getLimitForPresaleContractData = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getLimitForPresale",
+                args: [],
             },
-        })
-    }
-    getLimitForPresale();
+        ],
+        onSuccess(data) {
+            setLimitForPresaleResult(data);
+        },            
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
+            setLimitForPresaleResult(null);
+        },
+    });
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -160,25 +157,22 @@ function Presale() {
     const [remainingTime, setRemainingTime] = useState(0);
 
     const [remainingTimeResult, setRemainingTimeResult] = useState(null);
-    const getRemainingTime = () => {
-        useContractReads({
-            contracts: [
-                {
-                    ...getPresaleContract(chainId),
-                    functionName: "getRemainingTime",
-                    args: [],
-                },
-            ],
-            onSuccess(data) {
-                setRemainingTimeResult(data);
-            },            
-            onError: (error) => {
-                toast.error(getErrorMessage(error))
-                setRemainingTimeResult(null);
+    const getRemainingTimeContractData = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getRemainingTime",
+                args: [],
             },
-        })
-    }
-    getRemainingTime();
+        ],
+        onSuccess(data) {
+            setRemainingTimeResult(data);
+        },            
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
+            setRemainingTimeResult(null);
+        },
+    });
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -203,7 +197,7 @@ function Presale() {
             if (checkTime == true) {
                 setRemainingTime(0);
             } else {
-                setRemainingTime(60);
+                setRemainingTime(10);
             }
         }
     }, [remainingTimeResult])
@@ -237,32 +231,25 @@ function Presale() {
         }
     }, [remainingTime])
 
-    const counterDownEnded = () => {
-        setRemainingTime(0);
-    }
-
     const [myBoughtAmount, setMyBoughtAmount] = useState(0);
 
     const [addressBoughtResult, setAddressBoughtResult] = useState(null);
-    const getAddressBought = () => {
-        useContractReads({
-            contracts: [
-                {
-                    ...getPresaleContract(chainId),
-                    functionName: "getAddressBought",
-                    args: isConnectedWallet() == true ? [connectedWalletAddress] : [],
-                },
-            ],
-            onSuccess(data) {
-                setAddressBoughtResult(data);
-            },            
-            onError: (error) => {
-                toast.error(getErrorMessage(error))
-                setAddressBoughtResult(null);
+    const getAddressBoughtContractData = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getAddressBought",
+                args: isConnectedWallet() == true ? [connectedWalletAddress] : [],
             },
-        })
-    }
-    getAddressBought();
+        ],
+        onSuccess(data) {
+            setAddressBoughtResult(data);
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
+            setAddressBoughtResult(null);
+        },
+    });
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -292,25 +279,22 @@ function Presale() {
     const [totalBoughtAmount, setTotalBoughtAmount] = useState(0);
 
     const [totalBoughtResult, setTotalBoughtResult] = useState(null);
-    const getTotalSold = () => {
-        useContractReads({
-            contracts: [
-                {
-                    ...getPresaleContract(chainId),
-                    functionName: "getTotalSold",
-                    args: [],
-                },
-            ],
-            onSuccess(data) {
-                setTotalBoughtResult(data);
-            },            
-            onError: (error) => {
-                toast.error(getErrorMessage(error))
-                setTotalBoughtResult(null);
+    const getTotalSoldContractData = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getTotalSold",
+                args: [],
             },
-        })
-    }
-    getTotalSold();
+        ],
+        onSuccess(data) {
+            setTotalBoughtResult(data);
+        },            
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
+            setTotalBoughtResult(null);
+        },
+    });
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -340,25 +324,22 @@ function Presale() {
     const [maxRbccPerWallet, setMaxRbccPerWallet] = useState(0);
 
     const [maxRbccPerWalletResult, setMaxRbccPerWalletResult] = useState(null);
-    const getMaxRbccPerWallet = () => {
-        useContractReads({
-            contracts: [
-                {
-                    ...getPresaleContract(chainId),
-                    functionName: "getMaxRbccPerWallet",
-                    args: [],
-                },
-            ],
-            onSuccess(data) {
-                setMaxRbccPerWalletResult(data);
-            },            
-            onError: (error) => {
-                toast.error(getErrorMessage(error))
-                setMaxRbccPerWalletResult(null);
+    const getMaxRbccPerWalletContractData = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getMaxRbccPerWallet",
+                args: [],
             },
-        })    
-    }
-    getMaxRbccPerWallet();
+        ],
+        onSuccess(data) {
+            setMaxRbccPerWalletResult(data);
+        },            
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
+            setMaxRbccPerWalletResult(null);
+        },
+    });
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -388,25 +369,22 @@ function Presale() {
     const [minRbccPerWallet, setMinRbccPerWallet] = useState(0);
 
     const [minRbccPerWalletResult, setMinRbccPerWalletResult] = useState(null);
-    const getMinRbccPerWallet = () => {
-        useContractReads({
-            contracts: [
-                {
-                    ...getPresaleContract(chainId),
-                    functionName: "getMinRbccPerWallet",
-                    args: [],
-                },
-            ],
-            onSuccess(data) {
-                setMinRbccPerWalletResult(data);
-            },            
-            onError: (error) => {
-                toast.error(getErrorMessage(error))
-                setMinRbccPerWalletResult(null);
+    const getMinRbccPerWalletContractData = useContractReads({
+        contracts: [
+            {
+                ...getPresaleContract(chainId),
+                functionName: "getMinRbccPerWallet",
+                args: [],
             },
-        })
-    }
-    getMinRbccPerWallet();
+        ],
+        onSuccess(data) {
+            setMinRbccPerWalletResult(data);
+        },            
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
+            setMinRbccPerWalletResult(null);
+        },
+    });
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -640,8 +618,8 @@ function Presale() {
                 });
 
                 /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
-                getAddressBought();
-                getTotalSold();
+                getAddressBoughtContractData.refetch();
+                getTotalSoldContractData.refetch();
 
                 /% ---------------------------  Refresh ETH ---------------------------------- %/
                 onClickCurrencyETH();
@@ -667,9 +645,9 @@ function Presale() {
                 });
 
                 /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
-                getAddressBought();
-                getTotalSold();
-
+                getAddressBoughtContractData.refetch();
+                getTotalSoldContractData.refetch();
+        
                 /% ---------------------------  Refresh USDT ---------------------------------- %/
                 onClickCurrencyUSDT();
             } catch (err) {
@@ -701,8 +679,8 @@ function Presale() {
             });
 
             /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
-            getAddressBought();
-            getTotalSold();
+            getAddressBoughtContractData.refetch();
+            getTotalSoldContractData.refetch();
 
         } catch (err) {
             console.log(`error with ${err}`);
@@ -711,6 +689,15 @@ function Presale() {
         setPendingTx(false);
     }
 
+    const counterDownEnded = () => 
+        {
+            setRemainingTime(0);
+    
+            /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+            getAddressBoughtContractData.refetch();
+            getTotalSoldContractData.refetch();
+    }
+    
     return (
         <>
             <div className="mint_container">
