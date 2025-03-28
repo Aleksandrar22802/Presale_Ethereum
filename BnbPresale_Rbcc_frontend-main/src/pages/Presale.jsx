@@ -38,30 +38,7 @@ function Presale() {
     const chainId = useChainId()
     // console.log("chainId = ", chainId);
 
-    // const { data: accountBalance } = useBalance({ connectedWalletAddress, watch: true })
-    // const [startTime, setStartTime] = useState(0);
-    // const [endTime, setEndTime] = useState(0);
-
-    // const [softCap, setSoftCap] = useState(0);
-    // const [hardCap, setHardCap] = useState(0);
-    // const [minAmount, setMinAmount] = useState(0)
-    // const [maxAmount, setMaxAmount] = useState(0)
-    // const [presaleRate, setPresaleRate] = useState(0)
-    // const [listingRate, setListingRate] = useState(0)
-    // const [totalDepositedEthAmount, setTotalDepositedEthAmount] = useState(0);
-    // const [totalSellingTokenAmount, setTotalSellingTokenAmount] = useState(0);
-    // const [userDepositEthAmount, setUserDepositEthAmount] = useState(0);
-    // const [totalSupply, setTotalSupply] = useState(0)
-    // const refAmount = useRef(null)
-    // const token_price = 0.0004
-
     const [counterDeadline, setCounterDeadline] = useState(0);
-
-    // const ethereumConstant = "Ethereum";
-    // const usdtConstant = "USDT";
-    // const currencies = ["Ethereum", "USDT"];
-    // // const currencies = ["Ethereum"];
-    // const [currencyState, setCurrencyState] = useState(0)
 
     const roundNumberBy1000 = (number) => {
         return parseFloat(parseInt(number * 1000) / 1000);
@@ -95,8 +72,6 @@ function Presale() {
     const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
 
     const [drop, setDrop] = useState(false);
-    // const [usdtBalance, setUsdtBalance] = useState(0);
-    // const [ethereumBalance, setEthereumBalance] = useState(0); // New state for Ethereum balance
 
     const ETHER_DECIMAL = 1000000000000000000;
     // const ETHER_DECIMAL = 1000000000;
@@ -132,27 +107,6 @@ function Presale() {
         cryptoAmount = roundNumberBy1000(cryptoAmount);
         setBuyRbccAmount(cryptoAmount);
     }, [saleCryptoAmount])
-
-    const PreSaleStateVal = {
-        NotOpened: 0,
-        Open: 1,
-        End: 2,
-        Fail: 3,
-    }
-    const [preSaleState, setPreSaleState] = useState(PreSaleStateVal.NotOpened);
-
-    // const preSaleStateText = [
-    //     "Coming Soon",
-    //     "Presale is alive",
-    //     "Presale has ended",
-    //     "Presale was failed"
-    // ];
-    // const preSaleActionText = [
-    //     "Ready",
-    //     "Buy",
-    //     "Claim",
-    //     "Failed"
-    // ];
 
     // const [txHash, setTxHash] = useState(null)
     const [pendingTx, setPendingTx] = useState(false);
@@ -227,14 +181,14 @@ function Presale() {
         if (isConnectedWallet() == false)
         {
             setCounterDeadline(0)
-            setPreSaleState(PreSaleStateVal.End)
+            // setPreSaleState(PreSaleStateVal.End)
             return;
         }
 
         if (!remainingTimeResult || remainingTimeResult == undefined) 
         {
             setCounterDeadline(0)
-            setPreSaleState(PreSaleStateVal.End)
+            // setPreSaleState(PreSaleStateVal.End)
             return;
         }
 
@@ -243,12 +197,12 @@ function Presale() {
             if (parseInt(remainingTime) > 0) 
             {
                 setCounterDeadline(remainingTime * 1000)
-                setPreSaleState(PreSaleStateVal.Open)
+                // setPreSaleState(PreSaleStateVal.Open)
             }
             else 
             {
                 setCounterDeadline(0)
-                setPreSaleState(PreSaleStateVal.End)
+                // setPreSaleState(PreSaleStateVal.End)
             }
         }, 1000);
         return () => {
@@ -494,155 +448,9 @@ function Presale() {
         }
     };
 
-    // useEffect(() => {
-    //     if (connectedWalletAddress) {
-    //         fetchEthereumBalance(); // Fetch Ethereum balance when connectedWalletAddress is available
-    //     }
-    // }, [connectedWalletAddress]);
-
     const changeDropState = () => {
         setDrop(!drop);
     }
-
-    // const setCurrency = async (idx) => {
-    //     setCurrencyState(idx);
-    //     setDrop(false)
-    //     if (currencies[idx] === usdtConstant) {
-    //         await fetchUsdtBalance();
-    //         setSaleCryptoAmount(usdtBalance)
-    //     }
-    //     if (currencies[idx] === ethereumConstant) {
-    //         await fetchEthereumBalance();
-    //         setSaleCryptoAmount(ethereumBalance)
-    //     }
-    // }
-
-    // useWaitForTransaction({
-    //     hash: txHash,
-    //     onSuccess: (data) => {
-    //         toast.success("Transaction Success!")
-    //         setTxHash(null)
-    //         refetchTotalDepositedEther()
-    //         setPendingTx(false)
-    //     }
-    // })
-
-    const handleAction = async () => {
-        if (isConnectedWallet() == false) return;
-        if (preSaleState == PreSaleStateVal.Open) {
-            /*
-            if (currencies[currencyState] == usdtConstant) 
-            {
-                if (saleCryptoAmount < 50) {
-                    toast.success("Minimum order amount is $50!");
-                    return;
-                }
-            } 
-            else 
-            {
-                if (saleCryptoAmount < (50 / 2057)) {
-                    toast.success("Minimum order amount is $50!")
-                    return;
-                }
-            }
-            */
-            let transferVal = parseFloat(saleCryptoAmount);
-            if (!transferVal) return;
-
-            setPendingTx(true);
-
-            let presaleContractAddress = PresaleContract.address[chainId];
-            if (currencies[currencyState] == ethereumConstant) {
-                // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
-                const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
-                // const web3 = new Web3(window.ethereum)
-
-                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
-                // web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
-                // 	from: connectedWalletAddress
-                // });
-
-                try {
-                    const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
-                    const gasPrice = await web3.eth.getGasPrice();
-                    const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
-
-                    const tx = {
-                        from: connectedWalletAddress,
-                        to: presaleContractAddress,
-                        value: weiValue,
-                        gas: 21000,  // Estimated gas limit for a simple transaction
-                        gasPrice: gasPrice,
-                        nonce: nonce,
-                        chainId: 17000,
-                    };
-
-                    // Sign the transaction
-                    const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
-                    await web3.eth.sendTransaction(signedTx.rawTransaction);
-
-                    // await web3.eth.sendTransaction(tx);
-
-                    // buyWithEther({
-                    // 	args: [],
-                    // 	from: connectedWalletAddress,
-                    // 	value: weiValue
-                    // });
-
-                } catch (err) {
-                    console.log(`error with ${err}`);
-                }
-            }
-            else {
-                try {
-                    const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
-                    await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
-                        from: connectedWalletAddress
-                    });
-
-                    buyTokensWithUSDT({
-                        args: [],
-                        from: connectedWalletAddress,
-                        value: weiValue
-                    });
-                } catch (err) {
-                    console.log(`error with ${err}`);
-                }
-            }
-
-            setPendingTx(false);
-        }
-        else if (preSaleState == PreSaleStateVal.End) {
-            setPendingTx(true);
-
-            if (boughtResult[0].result > 0) {
-                claimRbcc({
-                    args: [],
-                    from: connectedWalletAddress,
-                });
-
-                setClaimAmount(0);
-            }
-
-            setPendingTx(false);
-        }
-        else if (preSaleState == PreSaleStateVal.Fail) {
-            /*
-            setPendingTx(true);
-
-            Refund({
-                args: [],
-                from: connectedWalletAddress
-            });
-
-            setPendingTx(false);
-            */
-        }
-    }
-
-    // const setInputMax = () => {
-    //     setSaleCryptoAmount(currencies[currencyState] == ethereumConstant ? ethereumBalance : usdtBalance)
-    // }
 
     const onChangeSaleCryptoAmount = (event) => {
         let amount = parseFloat(event.target.value);
@@ -692,6 +500,101 @@ function Presale() {
         if (saleCryptoType == CRYPTO_TYPE.ETH) return "ETH you pay";
         else if (saleCryptoType == CRYPTO_TYPE.USDT) return "USDT you pay";
         return "CARD you pay";
+    }
+
+    const onClickBuy = async () => {
+        if (isConnectedWallet() == false) return;
+        if (counterDeadline <= 0) {
+            return;
+        }
+
+        setPendingTx(true);
+
+        let presaleContractAddress = PresaleContract.address[chainId];
+        if (saleCryptoType == CRYPTO_TYPE.ETH) {
+            // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
+            const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+            // const web3 = new Web3(window.ethereum)
+
+            const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
+            // web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
+            // 	from: connectedWalletAddress
+            // });
+
+            try {
+                const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
+                const gasPrice = await web3.eth.getGasPrice();
+                const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
+
+                const tx = {
+                    from: connectedWalletAddress,
+                    to: presaleContractAddress,
+                    value: weiValue,
+                    gas: 21000,  // Estimated gas limit for a simple transaction
+                    gasPrice: gasPrice,
+                    nonce: nonce,
+                    chainId: 17000,
+                };
+
+                // Sign the transaction
+                const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
+                await web3.eth.sendTransaction(signedTx.rawTransaction);
+
+                // await web3.eth.sendTransaction(tx);
+
+                // buyWithEther({
+                // 	args: [],
+                // 	from: connectedWalletAddress,
+                // 	value: weiValue
+                // });
+
+            } catch (err) {
+                console.log(`error with ${err}`);
+            }
+        }
+        else if (saleCryptoType == CRYPTO_TYPE.USDT)
+        {
+            try {
+                const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
+                await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
+                    from: connectedWalletAddress
+                });
+
+                buyTokensWithUSDT({
+                    args: [],
+                    from: connectedWalletAddress,
+                    value: weiValue
+                });
+            } catch (err) {
+                console.log(`error with ${err}`);
+            }
+        }
+        else
+        {
+
+        }
+
+        setPendingTx(false);
+    }
+
+    const onClickClaim = async () => {
+        if (isConnectedWallet() == false) return;
+        if (counterDeadline > 0) {
+            return;
+        }
+
+        setPendingTx(true);
+
+        try {
+            claimRbcc({
+                args: [],
+                from: connectedWalletAddress,
+            });
+        } catch (err) {
+            console.log(`error with ${err}`);
+        }
+
+        setPendingTx(false);
     }
 
     return (
@@ -834,77 +737,28 @@ function Presale() {
                                     ""
                                     :
                                     <div className="mint_currency_action">
-                                        <button 
-                                            // onClick={onClickCurrencyUSDT}
-                                        >
-                                            <span>Buy</span>
-                                        </button>
-                                        <button 
-                                            // onClick={onClickCurrencyUSDT}
-                                        >
-                                            <span>Claim</span>
-                                        </button>
+                                        {
+                                            counterDeadline > 0 ? 
+                                                <button 
+                                                    onClick={onClickBuy}
+                                                >
+                                                    <span>Buy</span>
+                                                </button>
+                                                :
+                                                ""
+                                        }
+                                        {
+                                            counterDeadline > 0 ? 
+                                                ""
+                                                :
+                                                <button 
+                                                    onClick={onClickClaim}
+                                                >
+                                                    <span>Claim</span>
+                                                </button>
+                                        }
                                     </div>
                                 }
-
-
-                            {/* {preSaleState === PreSaleStateVal.Open && <div className="md:!mt-[50px] !mt-[30px]">
-                                <section className="">
-                                    <div className="border border-[#fff] rounded-[28px] text-[16px] md:text-[18px] p-[20px]">
-                                        <div className="flex items-center justify-between">
-                                            <div >Amount</div>
-                                            <div className="flex items-center justify-center gap-3">
-                                                <div >Balance: {currencyState === 1 ? usdtBalance : ethereumBalance}</div>
-                                                <div className="font-bold text-[#d49c44] cursor-pointer" onClick={() => setInputMax()}>MAX</div>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center justify-between ">
-                                            <input
-                                                type="number"
-                                                inputMode="decimal"
-                                                placeholder="0.00"
-                                                className="h-full w-full mt-[25px] md:mt-[20px] text-[30px] md:text-[26px] pr-[20px] bg-transparent"
-                                                // ref={refAmount}
-                                                value={saleCryptoAmount}
-                                                onChange={changeValue}
-                                                disabled={preSaleState != PreSaleStateVal.Open}
-                                            />
-                                            <div className="flex items-center justify-center gap-3 mt-[30px] relative">
-                                                <div className="font-bold cursor-pointer" onClick={changeDropState}>{currencies[currencyState]}</div>
-                                                {drop &&
-                                                    <div className="flex flex-col right-[-1px] absolute top-[105%] w-[auto] z-5 block h-[auto] bg-[#212121] mt-2 border-[1px] rounded-b-xl overflow-hidden">
-                                                        {currencies.map((currency, idx) => {
-                                                            return (
-                                                                <div className="flex cursor-pointer justify-end p-3 hover:bg-[#111111bb]" onClick={() => setCurrency(idx)} key={idx} >{currency}</div>
-                                                            )
-                                                        })}
-                                                    </div>
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                                {saleCryptoAmount !== 0 && !isNaN(saleCryptoAmount) && (
-                                    <div className="flex items-center justify-center">
-                                        <span className="mt-5">
-                                            You will be able to claim {buyRbccAmount} Robocopcoin
-                                        </span>
-                                    </div>
-                                )}
-                            </div>}
-                            <section className="flex flex-col items-center justify-center w-full top-padding">
-                                {preSaleState === PreSaleStateVal.End && <div>
-                                    <div className="pb-5">You can claim {getFormattedDisplayNumber(claimAmount)} Rbcd Token</div>
-                                </div>}
-                                <button
-                                    className="!h-auto w-full max-w-[140px] primary-btn text-center !text-[18px] !py-[15px]"
-                                    disabled={preSaleState == PreSaleStateVal.NotOpened || pendingTx}
-                                    onClick={handleAction}
-                                >
-                                    {pendingTx && <div className="presale-loader"></div>}
-                                    {preSaleActionText[preSaleState]}
-                                </button>
-                            </section> */}
                         </div>
                     </div>
                 </div>
