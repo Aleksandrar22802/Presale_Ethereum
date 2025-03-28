@@ -14,6 +14,7 @@ import PresaleContract from "../contracts/presale"
 
 import IconRemit from "../assets/remittix/logo.svg"
 import IconMint from "../assets/icons/icon-mint.png"
+import IconBoost from "../assets/icons/icon-boost.png"
 import IconEther1 from "../assets/remittix/eth.png"
 import IconEther from "../assets/remittix/eth-eth.png"
 import IconUSDT from "../assets/remittix/usdt-eth.png"
@@ -656,8 +657,18 @@ function Presale() {
                     <div className="mint_wrapper">
                         <div className="mint_content">
                             <div className="mint_title">
-                                <span>Buy Now ...</span>
-                                <img src={IconMint} />
+                                {
+                                    (counterDeadline > 0 || myBoughtAmount > 0) ? 
+                                        <span>Buy Now ...</span>
+                                        :
+                                        <span>Presale Ended ...</span>
+                                }
+                                {
+                                    (counterDeadline > 0 || myBoughtAmount > 0) ? 
+                                        <img src={IconMint} />
+                                        :
+                                        <img src={IconBoost} />
+                                }
                             </div>
                             <div className="mint_state text-center">
                                 <span>
@@ -765,7 +776,7 @@ function Presale() {
                                                 ""
                                         }
                                         {
-                                            counterDeadline > 0 ? 
+                                            (counterDeadline > 0 || myBoughtAmount <= 0) ? 
                                                 ""
                                                 :
                                                 <button 
