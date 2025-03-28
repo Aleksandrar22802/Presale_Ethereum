@@ -14,6 +14,7 @@ import PresaleContract from "../contracts/presale"
 
 import IconRemit from "../assets/remittix/logo.svg"
 import IconMint from "../assets/icons/icon-mint.png"
+import IconEther1 from "../assets/remittix/eth.png"
 import IconEther from "../assets/remittix/eth-eth.png"
 import IconUSDT from "../assets/remittix/usdt-eth.png"
 import IconCARD from "../assets/remittix/card.png"
@@ -61,6 +62,10 @@ function Presale() {
     // const currencies = ["Ethereum", "USDT"];
     // // const currencies = ["Ethereum"];
     // const [currencyState, setCurrencyState] = useState(0)
+
+    const roundNumberBy1000 = (number) => {
+        return parseFloat(parseInt(number * 1000) / 1000);
+    }
 
     const CRYPTO_TYPE = {
         ETH : 0,
@@ -124,6 +129,7 @@ function Presale() {
         else
         {
         }
+        cryptoAmount = roundNumberBy1000(cryptoAmount);
         setBuyRbccAmount(cryptoAmount);
     }, [saleCryptoAmount])
 
@@ -451,7 +457,7 @@ function Presale() {
         try {
             let balance = await usdtContract.methods.balanceOf(connectedWalletAddress).call();
             balance = BigNumber(balance).dividedBy(BigNumber(USDT_DECIMAL)).toNumber();
-            balance = parseFloat(parseInt(balance * 1000) / 1000);
+            balance = roundNumberBy1000(balance);
             console.log("fetchUsdtBalance = " + balance);
             setSaleCryptoAmount(balance);
             setSaleCryptoBalance(balance);
@@ -477,7 +483,7 @@ function Presale() {
 
             let balance = await web3.eth.getBalance(connectedWalletAddress);
             balance = BigNumber(balance).dividedBy(BigNumber(ETHER_DECIMAL)).toNumber();
-            balance = parseFloat(parseInt(balance * 1000) / 1000);
+            balance = roundNumberBy1000(balance);
             console.log("fetchEthereumBalance = " + balance);
             setSaleCryptoAmount(balance);
             setSaleCryptoBalance(balance);
@@ -649,6 +655,7 @@ function Presale() {
         if (amount > saleCryptoBalance) {
             amount = saleCryptoBalance;
         }
+        amount = roundNumberBy1000(amount);
         setSaleCryptoAmount(amount);
     }
 
@@ -806,6 +813,9 @@ function Presale() {
                                                 onChange={onChangeSaleCryptoAmount}
                                             >
                                             </input>
+                                            <div id="mint_currency_pay_icon">
+                                                <img src={IconEther1} />
+                                            </div>
                                         </div>
                                         <div className="mint_currency_receive">
                                             <span className="title">
@@ -815,6 +825,7 @@ function Presale() {
                                                 <span>{buyRbccAmount}</span>
                                                 <img src={IconRemit} />
                                             </div>
+                                            <img id="mint_currency_receive_icon" src={IconEther1} />
                                         </div>
                                     </div>
                             }
