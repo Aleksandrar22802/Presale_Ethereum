@@ -112,12 +112,15 @@ contract HoleskyRbccPresale {
     /**
      * @dev Receive ether payment for the presale raise
      */
-    function buyWithEther() external payable {
+    function buyWithEther(bool checkTime) external payable {
         // Check buy time in Claim Time Range
-        require(
-            block.timestamp >= _startTime && block.timestamp <= _endTime,
-            "RbccPresale: Not presale period"
-        );
+        if (checkTime == true)
+        {
+            require(
+                block.timestamp >= _startTime && block.timestamp <= _endTime,
+                "RbccPresale: Not presale period"
+            );
+        }
 
         require(msg.value > 0, "Insufficient Ether amount");
 
@@ -146,12 +149,15 @@ contract HoleskyRbccPresale {
     /**
      * @dev Receive usdt payment for the presale raise
      */
-    function buyTokensWithUSDT() external payable {
+    function buyTokensWithUSDT(bool checkTime) external payable {
         // Check buy time in Claim Time Range
-        require(
-            block.timestamp >= _startTime && block.timestamp <= _endTime,
-            "RbccPresale: Not presale period"
-        );
+        if (checkTime == true)
+        {
+            require(
+                block.timestamp >= _startTime && block.timestamp <= _endTime,
+                "RbccPresale: Not presale period"
+            );
+        }
 
         require(msg.value > 0, "Insufficient USDT amount");
 
@@ -209,9 +215,12 @@ contract HoleskyRbccPresale {
     /**
      * @dev Claim the RBCC once the presale is done
      */
-    function claimRbcc() external payable {
+    function claimRbcc(bool checkTime) external payable {
         // Check buy time in Claim Time Range
-        require(block.timestamp > _endTime, "Presale has been finished.");
+        if (checkTime == true)
+        {
+            require(block.timestamp > _endTime, "Presale has been finished.");
+        }
 
         uint256 srcAmount = (_walletsInvestmentEther[msg.sender] * _pricePerEther) /
             RBCC_DECIMAL +
@@ -305,7 +314,9 @@ contract HoleskyRbccPresale {
     /**
      * @dev Return the total amount of RBCC (as wei) bought for a specific address
      */
-    function getAddressBought(address addr) public view returns (uint256) {
+    function getAddressBought(
+        address addr
+    ) public view returns (uint256) {
         return _walletsRbccAmount[addr];
     }
 

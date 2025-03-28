@@ -4,7 +4,7 @@ const CALPresaleContract = {
 		// 1: "0x318ceec1819e0d2a0eb922b3d510f923005fd2a9",
 		56: '0x799de9896C3DC074F8b05F3B610178D06E1f90B0',
 		97: '0x02e09ECFc5e3Aa7dA3F3b5bABBb363b2713e6211',
-		17000: '0x533e74c16ceac4CE2E9b0dBe123D17391F573275',
+		17000: '0xf2179Fd7b4977d9a6a385B7392c46feeE8106D1d',
 	},
 	abi: [
 		{
@@ -84,21 +84,39 @@ const CALPresaleContract = {
 			"type": "function"
 		  },
 		  {
-			"inputs": [],
+			"inputs": [
+			  {
+				"internalType": "bool",
+				"name": "checkTime",
+				"type": "bool"
+			  }
+			],
 			"name": "buyTokensWithUSDT",
 			"outputs": [],
 			"stateMutability": "payable",
 			"type": "function"
 		  },
 		  {
-			"inputs": [],
+			"inputs": [
+			  {
+				"internalType": "bool",
+				"name": "checkTime",
+				"type": "bool"
+			  }
+			],
 			"name": "buyWithEther",
 			"outputs": [],
 			"stateMutability": "payable",
 			"type": "function"
 		  },
 		  {
-			"inputs": [],
+			"inputs": [
+			  {
+				"internalType": "bool",
+				"name": "checkTime",
+				"type": "bool"
+			  }
+			],
 			"name": "claimRbcc",
 			"outputs": [],
 			"stateMutability": "payable",

@@ -39,6 +39,8 @@ function Presale() {
     const chainId = useChainId()
     // console.log("chainId = ", chainId);
 
+    const [checkTime, setCheckTime] = useState(false);
+
     const [counterDeadline, setCounterDeadline] = useState(0);
 
     const roundNumberBy1000 = (number) => {
@@ -171,10 +173,17 @@ function Presale() {
         }
 
         console.log("remainingTimeResult - ", remainingTimeResult)
-        if (remainingTimeResult[0].result != undefined) {
+        if (remainingTimeResult[0].result != undefined) 
+            {
             setRemainingTime(getFormattedUnits(remainingTimeResult[0].result));
-        } else {
-            setRemainingTime(0);
+        } 
+        else 
+        {
+            if (checkTime == true) {
+                setRemainingTime(0);
+            } else {
+                setRemainingTime(60);
+            }
         }
     }, [remainingTimeResult])
 
@@ -202,7 +211,11 @@ function Presale() {
             }
             else 
             {
-                setCounterDeadline(0)
+                if (checkTime == true) {
+                    setCounterDeadline(0)
+                } else {
+                    setCounterDeadline(3600 * 1000)
+                }
                 // setPreSaleState(PreSaleStateVal.End)
             }
         }, 1000);
@@ -558,9 +571,9 @@ function Presale() {
 
                 /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyWithEther({
-                	args: [],
+                	args: [checkTime],
                 	from: connectedWalletAddress,
-                	value: weiValue
+                	value: weiValue,
                 });
 
             } catch (err) {
@@ -581,9 +594,9 @@ function Presale() {
 
                 /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyTokensWithUSDT({
-                    args: [],
+                	args: [checkTime],
                     from: connectedWalletAddress,
-                    value: weiValue
+                    value: weiValue,
                 });
             } catch (err) {
                 console.log(`error with ${err}`);
@@ -607,7 +620,7 @@ function Presale() {
 
         try {
             claimRbcc({
-                args: [],
+                args: [checkTime],
                 from: connectedWalletAddress,
             });
         } catch (err) {
