@@ -12,16 +12,11 @@ import { getPresaleContract } from "../contracts";
 import USDTAbi from "../assets/abi/usdtTokenABI.json"
 import PresaleContract from "../contracts/presale"
 
+import IconRemit from "../assets/remittix/logo.svg"
 import IconMint from "../assets/icons/icon-mint.png"
-import IconEther from "../assets/icons/lp-CAL_ETH.png"
-import IconUSDT from "../assets/icons/lp-caUSD_USDC.png"
-import IconRbcc from "../assets/icons/token-LSDoge.png"
-
-import IconRemittix from "../assets/remittix/remix.com.svg"
-import IconTelegram from "../assets/remittix/telegram.svg"
-import IconMedium from "../assets/remittix/medium.svg"
-import IconLinkrEE from "../assets/remittix/linktr.ee.svg"
-
+import IconEther from "../assets/remittix/eth-eth.png"
+import IconUSDT from "../assets/remittix/usdt-eth.png"
+import IconCARD from "../assets/remittix/card.png"
 
 import "react-sweet-progress/lib/style.css";
 
@@ -761,6 +756,14 @@ function Presale() {
                                             <img src={IconUSDT} />
                                             <span>USDT</span>
                                         </button>
+                                        <button 
+                                            id="mint_currency_button_card"
+                                            className={saleCryptoType == CRYPTO_TYPE.USDT ? "currency_type selected" : "currency_type"}
+                                            onClick={onClickCurrencyUSDT}
+                                        >
+                                            <img src={IconCARD} />
+                                            <span>CARD</span>
+                                        </button>
                                     </div>
                             }
                             {
@@ -794,7 +797,7 @@ function Presale() {
                                             </span>
                                             <div className="content">
                                                 <span>{buyRbccAmount}</span>
-                                                <img src={IconRbcc} />
+                                                <img src={IconRemit} />
                                             </div>
                                         </div>
                                     </div>

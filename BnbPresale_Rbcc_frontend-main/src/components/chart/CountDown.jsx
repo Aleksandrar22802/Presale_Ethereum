@@ -51,22 +51,22 @@ export default function CountDown({ end }) {
         <div className='mint_counter_down text-center flex items-center justify-center md:gap-3 gap-1'>
             <div className=''>
                 <div className='bg-timer p-5 rounded-[10px] shadow-md md:text-[48px] text-[32px] mb-3'>{padNumber(days)}</div>
-                <div className='md:text-[24px] text-[10px]'>DAYS</div>
+                <div className='md:text-[20px] text-[10px]'>DAYS</div>
             </div>
             <div className='mt-[-25px] md:mt-[-30px] md:text-[48px] text-[24px]'>:</div>
             <div className=''>
                 <div className='bg-timer p-5 rounded-[10px] shadow-md md:text-[48px] text-[32px] mb-3'>{padNumber(hours)}</div>
-                <div className='md:text-[24px] text-[10px]'>HOURS</div>
+                <div className='md:text-[20px] text-[10px]'>HOURS</div>
             </div>
             <div className='mt-[-25px] md:mt-[-30px] md:text-[48px] text-[24px]'>:</div>
             <div className=''>
                 <div className='bg-timer p-5 rounded-[10px] shadow-md md:text-[48px] text-[32px] mb-3'>{padNumber(mins)}</div>
-                <div className='md:text-[24px] text-[10px]'>MINUTES</div>
+                <div className='md:text-[20px] text-[10px]'>MINUTES</div>
             </div>
             <div className='mt-[-25px] md:mt-[-30px] md:text-[48px] text-[24px]'>:</div>
             <div className=''>
                 <div className='bg-timer p-5 rounded-[10px] shadow-md md:text-[48px] text-[32px] mb-3'>{padNumber(secs)}</div>
-                <div className='md:text-[24px] text-[10px]'>SECONDS</div>
+                <div className='md:text-[20px] text-[10px]'>SECONDS</div>
             </div>
         </div>
     )
