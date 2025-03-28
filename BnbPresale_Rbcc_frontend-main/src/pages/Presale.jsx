@@ -56,7 +56,6 @@ function Presale() {
     const [saleCryptoType, setSaleCryptoType] = useState(CRYPTO_TYPE.USDT);
 
     useEffect(() => {
-        setDrop(false)
         setSaleCryptoAmount(0);
         setSaleCryptoBalance(0);
         if (saleCryptoType == CRYPTO_TYPE.ETH)
@@ -75,10 +74,9 @@ function Presale() {
     const [saleCryptoBalance, setSaleCryptoBalance] = useState(0);
     const [saleCryptoAmount, setSaleCryptoAmount] = useState(0);
 
-    const [drop, setDrop] = useState(false);
+    // const [drop, setDrop] = useState(false);
 
     const ETHER_DECIMAL = 1000000000000000000;
-    // const ETHER_DECIMAL = 1000000000;
     const USDT_DECIMAL = 1000000;
     const RBCC_DECIMAL = 100000000;
     const USDT_PER_ETHER = 2000;
@@ -117,15 +115,26 @@ function Presale() {
 
     const [limitForPresale, setLimitForPresale] = useState(0);
 
-    const { data: limitForPresaleResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getLimitForPresale",
-                args: [],
+    const [limitForPresaleResult, setLimitForPresaleResult] = useState(null);
+    const getLimitForPresale = () => {
+        useContractReads({
+            contracts: [
+                {
+                    ...getPresaleContract(chainId),
+                    functionName: "getLimitForPresale",
+                    args: [],
+                },
+            ],
+            onSuccess(data) {
+                setLimitForPresaleResult(data);
+            },            
+            onError: (error) => {
+                toast.error(getErrorMessage(error))
+                setLimitForPresaleResult(null);
             },
-        ]
-    })
+        })
+    }
+    getLimitForPresale();
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -150,15 +159,26 @@ function Presale() {
 
     const [remainingTime, setRemainingTime] = useState(0);
 
-    const { data: remainingTimeResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getRemainingTime",
-                args: [],
+    const [remainingTimeResult, setRemainingTimeResult] = useState(null);
+    const getRemainingTime = () => {
+        useContractReads({
+            contracts: [
+                {
+                    ...getPresaleContract(chainId),
+                    functionName: "getRemainingTime",
+                    args: [],
+                },
+            ],
+            onSuccess(data) {
+                setRemainingTimeResult(data);
+            },            
+            onError: (error) => {
+                toast.error(getErrorMessage(error))
+                setRemainingTimeResult(null);
             },
-        ]
-    })
+        })
+    }
+    getRemainingTime();
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -183,7 +203,7 @@ function Presale() {
             if (checkTime == true) {
                 setRemainingTime(0);
             } else {
-                setRemainingTime(10);
+                setRemainingTime(60);
             }
         }
     }, [remainingTimeResult])
@@ -223,15 +243,26 @@ function Presale() {
 
     const [myBoughtAmount, setMyBoughtAmount] = useState(0);
 
-    const { data: addressBoughtResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getAddressBought",
-                args: isConnectedWallet() == true ? [connectedWalletAddress] : [],
+    const [addressBoughtResult, setAddressBoughtResult] = useState(null);
+    const getAddressBought = () => {
+        useContractReads({
+            contracts: [
+                {
+                    ...getPresaleContract(chainId),
+                    functionName: "getAddressBought",
+                    args: isConnectedWallet() == true ? [connectedWalletAddress] : [],
+                },
+            ],
+            onSuccess(data) {
+                setAddressBoughtResult(data);
+            },            
+            onError: (error) => {
+                toast.error(getErrorMessage(error))
+                setAddressBoughtResult(null);
             },
-        ]
-    })
+        })
+    }
+    getAddressBought();
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -260,15 +291,26 @@ function Presale() {
 
     const [totalBoughtAmount, setTotalBoughtAmount] = useState(0);
 
-    const { data: totalBoughtResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getTotalSold",
-                args: [],
+    const [totalBoughtResult, setTotalBoughtResult] = useState(null);
+    const getTotalSold = () => {
+        useContractReads({
+            contracts: [
+                {
+                    ...getPresaleContract(chainId),
+                    functionName: "getTotalSold",
+                    args: [],
+                },
+            ],
+            onSuccess(data) {
+                setTotalBoughtResult(data);
+            },            
+            onError: (error) => {
+                toast.error(getErrorMessage(error))
+                setTotalBoughtResult(null);
             },
-        ]
-    })
+        })
+    }
+    getTotalSold();
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -297,15 +339,26 @@ function Presale() {
 
     const [maxRbccPerWallet, setMaxRbccPerWallet] = useState(0);
 
-    const { data: maxRbccPerWalletResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getMaxRbccPerWallet",
-                args: [],
+    const [maxRbccPerWalletResult, setMaxRbccPerWalletResult] = useState(null);
+    const getMaxRbccPerWallet = () => {
+        useContractReads({
+            contracts: [
+                {
+                    ...getPresaleContract(chainId),
+                    functionName: "getMaxRbccPerWallet",
+                    args: [],
+                },
+            ],
+            onSuccess(data) {
+                setMaxRbccPerWalletResult(data);
+            },            
+            onError: (error) => {
+                toast.error(getErrorMessage(error))
+                setMaxRbccPerWalletResult(null);
             },
-        ]
-    })
+        })    
+    }
+    getMaxRbccPerWallet();
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -334,15 +387,26 @@ function Presale() {
 
     const [minRbccPerWallet, setMinRbccPerWallet] = useState(0);
 
-    const { data: minRbccPerWalletResult } = useContractReads({
-        contracts: [
-            {
-                ...getPresaleContract(chainId),
-                functionName: "getMinRbccPerWallet",
-                args: [],
+    const [minRbccPerWalletResult, setMinRbccPerWalletResult] = useState(null);
+    const getMinRbccPerWallet = () => {
+        useContractReads({
+            contracts: [
+                {
+                    ...getPresaleContract(chainId),
+                    functionName: "getMinRbccPerWallet",
+                    args: [],
+                },
+            ],
+            onSuccess(data) {
+                setMinRbccPerWalletResult(data);
+            },            
+            onError: (error) => {
+                toast.error(getErrorMessage(error))
+                setMinRbccPerWalletResult(null);
             },
-        ]
-    })
+        })
+    }
+    getMinRbccPerWallet();
 
     useEffect(() => {
         if (isConnectedWallet() == false)
@@ -378,8 +442,8 @@ function Presale() {
             setSaleCryptoAmount(0);
             setSaleCryptoBalance(0);
         },
-        onError: (data) => {
-            toast.error(getErrorMessage(data))
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
             // setTxHash(null)
             setPendingTx(false)
         }
@@ -394,8 +458,8 @@ function Presale() {
             setSaleCryptoAmount(0);
             setSaleCryptoBalance(0);
         },
-        onError: (data) => {
-            toast.error(getErrorMessage(data))
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
             // setTxHash(null)
             setPendingTx(false)
         }
@@ -410,8 +474,8 @@ function Presale() {
             setSaleCryptoAmount(0);
             setSaleCryptoBalance(0);
         },
-        onError: (data) => {
-            toast.error(getErrorMessage(data))
+        onError: (error) => {
+            toast.error(getErrorMessage(error))
             // setTxHash(null)
             setPendingTx(false)
         }
@@ -465,9 +529,9 @@ function Presale() {
         }
     };
 
-    const changeDropState = () => {
-        setDrop(!drop);
-    }
+    // const changeDropState = () => {
+    //     setDrop(!drop);
+    // }
 
     const onChangeSaleCryptoAmount = (event) => {
         let amount = parseFloat(event.target.value);
@@ -545,7 +609,7 @@ function Presale() {
                 //     from: connectedWalletAddress
                 // });
 
-                /% ---------------------------  Send to ETH Holesky ---------------------------------- %/
+                /% ---------------------------  Send ETH to Holesky ---------------------------------- %/
                 // ---------------- new method ----------------
                 const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
                 const gasPrice = await web3.eth.getGasPrice();
@@ -584,12 +648,10 @@ function Presale() {
             try {
                 const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
 
-                /*
-                /% ---------------------------  Send to ETH Holesky ---------------------------------- %/
+                /% ---------------------------  Send USDT to Holesky ---------------------------------- %/
                 await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
                     from: connectedWalletAddress
                 });
-                */
 
                 /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyTokensWithUSDT({
