@@ -364,6 +364,8 @@ function Presale() {
         onSuccess: (data) => {
             toast.success("Transaction Submitted!")
             // setTxHash(data.hash)
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
         },
         onError: (data) => {
             toast.error(getErrorMessage(data))
@@ -378,6 +380,8 @@ function Presale() {
         onSuccess: (data) => {
             toast.success("Transaction Submitted!")
             // setTxHash(data.hash)
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
         },
         onError: (data) => {
             toast.error(getErrorMessage(data))
@@ -392,6 +396,8 @@ function Presale() {
         onSuccess: (data) => {
             toast.success("Transaction Submitted!")
             // setTxHash(data.hash)
+            setSaleCryptoAmount(0);
+            setSaleCryptoBalance(0);
         },
         onError: (data) => {
             toast.error(getErrorMessage(data))
@@ -512,16 +518,22 @@ function Presale() {
 
         let presaleContractAddress = PresaleContract.address[chainId];
         if (saleCryptoType == CRYPTO_TYPE.ETH) {
-            // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
-            const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
-            // const web3 = new Web3(window.ethereum)
-
             const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
-            // web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
-            // 	from: connectedWalletAddress
-            // });
 
             try {
+
+                /*
+                // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
+                const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+                // const web3 = new Web3(window.ethereum)
+
+                // ---------------- old method ----------------
+                // web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
+                //     from: connectedWalletAddress
+                // });
+
+                /% ---------------------------  Send to ETH Holesky ---------------------------------- %/
+                // ---------------- new method ----------------
                 const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
                 const gasPrice = await web3.eth.getGasPrice();
                 const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
@@ -541,12 +553,14 @@ function Presale() {
                 await web3.eth.sendTransaction(signedTx.rawTransaction);
 
                 // await web3.eth.sendTransaction(tx);
+                */
 
-                // buyWithEther({
-                // 	args: [],
-                // 	from: connectedWalletAddress,
-                // 	value: weiValue
-                // });
+                /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
+                buyWithEther({
+                	args: [],
+                	from: connectedWalletAddress,
+                	value: weiValue
+                });
 
             } catch (err) {
                 console.log(`error with ${err}`);
@@ -556,10 +570,15 @@ function Presale() {
         {
             try {
                 const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
+
+                /*
+                /% ---------------------------  Send to ETH Holesky ---------------------------------- %/
                 await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
                     from: connectedWalletAddress
                 });
+                */
 
+                /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyTokensWithUSDT({
                     args: [],
                     from: connectedWalletAddress,
@@ -632,7 +651,6 @@ function Presale() {
                             </a>
                         </div>
                     </div>
-
                 </div>
                 <div className="mint_pane">
                     <div className="mint_wrapper">
@@ -640,8 +658,7 @@ function Presale() {
                             <div className="mint_title">
                                 <span>Buy Now ...</span>
                                 <img src={IconMint} />
-                                </div>
-                            {/* <div className="mint_state text-center">{remainingTimeResult ? preSaleStateText[preSaleState] : "Loading..."}</div> */}
+                            </div>
                             <div className="mint_state text-center">
                                 <span>
                                     {

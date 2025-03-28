@@ -209,7 +209,7 @@ contract HoleskyRbccPresale {
     /**
      * @dev Claim the RBCC once the presale is done
      */
-    function claimRbcc() public {
+    function claimRbcc() external payable {
         // Check buy time in Claim Time Range
         require(block.timestamp > _endTime, "Presale has been finished.");
 
