@@ -673,33 +673,31 @@ function Presale() {
                             <div className="mint_state text-center">
                                 <span>
                                     {
-                                        isConnectedWallet() == false ? 
-                                            "Please connect wallet." 
-                                            : 
+                                        isConnectedWallet() == true ? 
                                             "Pool Tokens : " + getPreSaleAbleAmount()
-                                    }
+                                            : 
+                                            "Please connect wallet." 
+                                        }
                                 </span>
                             </div>
                             {
-                                isConnectedWallet() == false ?
-                                    ""
-                                    :
+                                isConnectedWallet() == true ?
                                     <div className="mint_state text-center">
                                         <span>
                                             My Tokens : {getMyTokensInfo()}
                                         </span>
                                     </div>
+                                    :
+                                    ""
                             }
                             {
-                                isConnectedWallet() == false ?
-                                    ""
-                                    :
+                                (isConnectedWallet() == true && counterDeadline > 0) ?
                                     <CountDown end={counterDeadline} />
-                            }
-                            {
-                                isConnectedWallet() == false ?
-                                    ""
                                     :
+                                    ""
+                                }
+                            {
+                                isConnectedWallet() == true ?
                                     <div className="mint_currency_select">
                                         <button 
                                             id="mint_currency_button_eth"
@@ -726,11 +724,11 @@ function Presale() {
                                             <span>CARD</span>
                                         </button>
                                     </div>
+                                    :
+                                    ""
                             }
                             {
-                                isConnectedWallet() == false ?
-                                    ""
-                                    :
+                                isConnectedWallet() == true ?
                                     <div className="mint_currency_panel">
                                         <div className="mint_currency_pay">
                                             <span>
@@ -759,11 +757,11 @@ function Presale() {
                                             <img id="mint_currency_receive_icon" src={IconEther1} />
                                         </div>
                                     </div>
+                                    :
+                                    ""
                             }
                             {
-                                isConnectedWallet() == false ?
-                                    ""
-                                    :
+                                (isConnectedWallet() == true && (counterDeadline > 0 || myBoughtAmount > 0)) ?
                                     <div className="mint_currency_action">
                                         {
                                             counterDeadline > 0 ? 
@@ -776,16 +774,18 @@ function Presale() {
                                                 ""
                                         }
                                         {
-                                            (counterDeadline > 0 || myBoughtAmount <= 0) ? 
-                                                ""
-                                                :
+                                            (counterDeadline <= 0 && myBoughtAmount > 0) ? 
                                                 <button 
                                                     onClick={onClickClaim}
                                                 >
                                                     <span>Claim</span>
                                                 </button>
+                                                :
+                                                ""
                                         }
                                     </div>
+                                    :
+                                    ""
                                 }
                         </div>
                     </div>
