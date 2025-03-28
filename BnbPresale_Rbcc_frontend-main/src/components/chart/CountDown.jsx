@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-export default function CountDown({ end }) {
+export default function CountDown({ end, endCallback }) {
     const [days, setDays] = useState(0);
     const [hours, setHours] = useState(0);
     const [mins, setMins] = useState(0);
@@ -28,6 +28,7 @@ export default function CountDown({ end }) {
                 setMins(0);
                 setSecs(0);
                 clearInterval(timerId);
+                endCallback();
                 return;
             }
 

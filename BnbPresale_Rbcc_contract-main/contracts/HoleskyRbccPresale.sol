@@ -215,20 +215,17 @@ contract HoleskyRbccPresale {
     /**
      * @dev Claim the RBCC once the presale is done
      */
-    function claimRbcc(bool checkTime) external payable {
+    // function claimRbcc(bool checkTime) external payable {
+    function claimRbcc(bool checkTime) external {
         // Check buy time in Claim Time Range
         if (checkTime == true)
         {
             require(block.timestamp > _endTime, "Presale has been finished.");
         }
 
-        uint256 srcAmount = (_walletsInvestmentEther[msg.sender] * _pricePerEther) /
-            RBCC_DECIMAL +
-            _walletsInvestmentUSDT[msg.sender];
-        require(srcAmount > 0, "You dont have any RBCC to claim");
-
         // this value is in wei unit
         uint256 rbccAmount = _walletsRbccAmount[msg.sender];
+        require(rbccAmount > 0, "You dont have any RBCC to claim");
         /*
         require(
             _rbccToken.balanceOf(address(this)) >= rbccAmount,

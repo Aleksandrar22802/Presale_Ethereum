@@ -4,7 +4,7 @@ const CALPresaleContract = {
 		// 1: "0x318ceec1819e0d2a0eb922b3d510f923005fd2a9",
 		56: '0x799de9896C3DC074F8b05F3B610178D06E1f90B0',
 		97: '0x02e09ECFc5e3Aa7dA3F3b5bABBb363b2713e6211',
-		17000: '0xf2179Fd7b4977d9a6a385B7392c46feeE8106D1d',
+		17000: '0xfCDF36a605ef7c1116EB54F51dEe19caA486dD3c',
 	},
 	abi: [
 		{
@@ -119,7 +119,7 @@ const CALPresaleContract = {
 			],
 			"name": "claimRbcc",
 			"outputs": [],
-			"stateMutability": "payable",
+			"stateMutability": "nonpayable",
 			"type": "function"
 		  },
 		  {

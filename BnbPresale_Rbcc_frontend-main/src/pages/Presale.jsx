@@ -21,6 +21,7 @@ import IconUSDT from "../assets/remittix/usdt-eth.png"
 import IconCARD from "../assets/remittix/card.png"
 
 import "react-sweet-progress/lib/style.css";
+import { formatEther, parseEther } from "viem";
 
 function Presale() {
     const { address } = useAccount();
@@ -191,14 +192,12 @@ function Presale() {
         if (isConnectedWallet() == false)
         {
             setCounterDeadline(0)
-            // setPreSaleState(PreSaleStateVal.End)
             return;
         }
 
         if (!remainingTimeResult || remainingTimeResult == undefined) 
         {
             setCounterDeadline(0)
-            // setPreSaleState(PreSaleStateVal.End)
             return;
         }
 
@@ -207,22 +206,20 @@ function Presale() {
             if (parseInt(remainingTime) > 0) 
             {
                 setCounterDeadline(remainingTime * 1000)
-                // setPreSaleState(PreSaleStateVal.Open)
             }
             else 
             {
-                if (checkTime == true) {
-                    setCounterDeadline(0)
-                } else {
-                    setCounterDeadline(3600 * 1000)
-                }
-                // setPreSaleState(PreSaleStateVal.End)
+                setCounterDeadline(0)
             }
         }, 1000);
         return () => {
             clearInterval(timerId);
         }
     }, [remainingTime])
+
+    const counterDownEnded = () => {
+        setRemainingTime(0);
+    }
 
     const [myBoughtAmount, setMyBoughtAmount] = useState(0);
 
@@ -532,7 +529,9 @@ function Presale() {
 
         let presaleContractAddress = PresaleContract.address[chainId];
         if (saleCryptoType == CRYPTO_TYPE.ETH) {
-            const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
+            
+            // const weiValue = BigNumber(saleCryptoAmount).multipliedBy(ETHER_DECIMAL).toNumber();
+            const weiValue = parseEther(saleCryptoAmount.toString());
 
             try {
 
@@ -705,7 +704,10 @@ function Presale() {
                             }
                             {
                                 (isConnectedWallet() == true && counterDeadline > 0) ?
-                                    <CountDown end={counterDeadline} />
+                                    <CountDown 
+                                        end={counterDeadline} 
+                                        endCallback={counterDownEnded}
+                                    />
                                     :
                                     ""
                                 }
