@@ -639,6 +639,12 @@ function Presale() {
                 	value: weiValue,
                 });
 
+                /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+                getAddressBought();
+                getTotalSold();
+
+                /% ---------------------------  Refresh ETH ---------------------------------- %/
+                onClickCurrencyETH();
             } catch (err) {
                 console.log(`error with ${err}`);
             }
@@ -659,13 +665,21 @@ function Presale() {
                     from: connectedWalletAddress,
                     value: weiValue,
                 });
+
+                /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+                getAddressBought();
+                getTotalSold();
+
+                /% ---------------------------  Refresh USDT ---------------------------------- %/
+                onClickCurrencyUSDT();
             } catch (err) {
                 console.log(`error with ${err}`);
             }
         }
         else
         {
-
+            /% ---------------------------  Refresh CARD ---------------------------------- %/
+            onClickCurrencyCARD();
         }
 
         setPendingTx(false);
@@ -680,10 +694,16 @@ function Presale() {
         setPendingTx(true);
 
         try {
+            /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
             claimRbcc({
                 args: [checkTime],
                 from: connectedWalletAddress,
             });
+
+            /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+            getAddressBought();
+            getTotalSold();
+
         } catch (err) {
             console.log(`error with ${err}`);
         }
