@@ -56,15 +56,16 @@ function Presale() {
 
     const [counterDeadline, setCounterDeadline] = useState(0);
 
-    const ethereumConstant = "Ethereum";
-    const usdtConstant = "USDT";
-    const currencies = ["Ethereum", "USDT"];
-    // const currencies = ["Ethereum"];
-    const [currencyState, setCurrencyState] = useState(0)
+    // const ethereumConstant = "Ethereum";
+    // const usdtConstant = "USDT";
+    // const currencies = ["Ethereum", "USDT"];
+    // // const currencies = ["Ethereum"];
+    // const [currencyState, setCurrencyState] = useState(0)
 
     const CRYPTO_TYPE = {
         ETH : 0,
         USDT : 1,
+        CARD : 2,
     };
     const [saleCryptoType, setSaleCryptoType] = useState(CRYPTO_TYPE.USDT);
 
@@ -76,9 +77,12 @@ function Presale() {
         {
             fetchEthereumBalance();
         }
-        else
+        else if (saleCryptoType == CRYPTO_TYPE.USDT)
         {            
             fetchUsdtBalance();
+        }
+        else
+        {            
         }
     }, [saleCryptoType])
 
@@ -105,16 +109,20 @@ function Presale() {
     useEffect(() => {
         // console.log("saleCryptoAmount = " + saleCryptoAmount);
         let cryptoAmount = saleCryptoAmount;
-        if (saleCryptoType == CRYPTO_TYPE.ETH) {
+        if (saleCryptoType == CRYPTO_TYPE.ETH) 
+        {
             // ETHER => USDT
             cryptoAmount = cryptoAmount * USDT_PER_ETHER;
             // USDT => RBCC
             cryptoAmount = cryptoAmount / USDT_PER_RBCC;
         }
-        else 
+        else if (saleCryptoType == CRYPTO_TYPE.USDT)
         {
             // USDT => RBCC
             cryptoAmount = cryptoAmount / USDT_PER_RBCC;
+        }
+        else
+        {
         }
         setBuyRbccAmount(cryptoAmount);
     }, [saleCryptoAmount])
@@ -127,18 +135,18 @@ function Presale() {
     }
     const [preSaleState, setPreSaleState] = useState(PreSaleStateVal.NotOpened);
 
-    const preSaleStateText = [
-        "Coming Soon",
-        "Presale is alive",
-        "Presale has ended",
-        "Presale was failed"
-    ];
-    const preSaleActionText = [
-        "Ready",
-        "Buy",
-        "Claim",
-        "Failed"
-    ];
+    // const preSaleStateText = [
+    //     "Coming Soon",
+    //     "Presale is alive",
+    //     "Presale has ended",
+    //     "Presale was failed"
+    // ];
+    // const preSaleActionText = [
+    //     "Ready",
+    //     "Buy",
+    //     "Claim",
+    //     "Failed"
+    // ];
 
     // const [txHash, setTxHash] = useState(null)
     const [pendingTx, setPendingTx] = useState(false);
@@ -645,15 +653,24 @@ function Presale() {
     }
 
     const onClickCurrencyETH = () => {
-        document.getElementById("mint_currency_button_usdt").classList.remove("selected");
         document.getElementById("mint_currency_button_eth").classList.add("selected");
+        document.getElementById("mint_currency_button_usdt").classList.remove("selected");
+        document.getElementById("mint_currency_button_card").classList.remove("selected");
         setSaleCryptoType(CRYPTO_TYPE.ETH);
     }
 
     const onClickCurrencyUSDT = () => {
         document.getElementById("mint_currency_button_usdt").classList.add("selected");
         document.getElementById("mint_currency_button_eth").classList.remove("selected");
+        document.getElementById("mint_currency_button_card").classList.remove("selected");
         setSaleCryptoType(CRYPTO_TYPE.USDT);
+    }
+
+    const onClickCurrencyCARD = () => {
+        document.getElementById("mint_currency_button_card").classList.add("selected");
+        document.getElementById("mint_currency_button_eth").classList.remove("selected");
+        document.getElementById("mint_currency_button_usdt").classList.remove("selected");
+        setSaleCryptoType(CRYPTO_TYPE.CARD);
     }
 
     const getPreSaleAbleAmount = () => {
@@ -662,6 +679,12 @@ function Presale() {
 
     const getMyTokensInfo = () => {
         return myBoughtAmount + "(" + minRbccPerWallet + "~" + maxRbccPerWallet + ")";
+    }
+
+    const getPayMethodInfo = () => {
+        if (saleCryptoType == CRYPTO_TYPE.ETH) return "ETH you pay";
+        else if (saleCryptoType == CRYPTO_TYPE.USDT) return "USDT you pay";
+        return "CARD you pay";
     }
 
     return (
@@ -758,8 +781,8 @@ function Presale() {
                                         </button>
                                         <button 
                                             id="mint_currency_button_card"
-                                            className={saleCryptoType == CRYPTO_TYPE.USDT ? "currency_type selected" : "currency_type"}
-                                            onClick={onClickCurrencyUSDT}
+                                            className={saleCryptoType == CRYPTO_TYPE.CARD ? "currency_type selected" : "currency_type"}
+                                            onClick={onClickCurrencyCARD}
                                         >
                                             <img src={IconCARD} />
                                             <span>CARD</span>
@@ -772,16 +795,9 @@ function Presale() {
                                     :
                                     <div className="mint_currency_panel">
                                         <div className="mint_currency_pay">
-                                            {
-                                                saleCryptoType == CRYPTO_TYPE.ETH ?
-                                                <span>
-                                                    ETH you pay
-                                                </span>
-                                                :
-                                                <span>
-                                                    USDT you pay
-                                                </span>
-                                            }
+                                            <span>
+                                                {getPayMethodInfo()}
+                                            </span>
                                             <input 
                                                 type="number"
                                                 inputMode="decimal"
