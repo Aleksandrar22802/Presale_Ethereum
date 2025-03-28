@@ -1,14 +1,14 @@
 const { ethers, run, network } = require("hardhat");
 const { sleep } = require("sleep-ts");
 
-const verify = async (address, parameter = []) => {
-    console.log(`Veryfing ${address} ...`);
-    await run("verify:verify", {
-        address: address,
-        constructorArguments: parameter,
-    });
-    console.log("Success!");
-};
+// const verify = async (address, parameter = []) => {
+//     console.log(`Veryfing ${address} ...`);
+//     await run("verify:verify", {
+//         address: address,
+//         constructorArguments: parameter,
+//     });
+//     console.log("Success!");
+// };
 
 const main = async () => {
     // Get network data from Hardhat config (see hardhat.config.ts).
@@ -29,12 +29,10 @@ const main = async () => {
     let wallet2Address = "0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4";
     let usdtTokenAddress = "0xFdf8062Ad4D57F1539D122231A2b189cfc58a955";
     let rbccTokenAddress = "0x45f3A831cf3B4b45941546807B061699124b1e51";
-    let rbccTokenOwner = wallet2Address;
     const RbccPresale = await RbccPresaleContract.deploy(
         wallet2Address,
         usdtTokenAddress,
         rbccTokenAddress,
-        rbccTokenOwner,
     );
 
     await RbccPresale.deployed();
@@ -49,14 +47,13 @@ const main = async () => {
         wallet2Address,
         usdtTokenAddress,
         rbccTokenAddress,
-        rbccTokenOwner,
     ]);
     */
 };
 
 main()
-.then(() => process.exit(0))
-.catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

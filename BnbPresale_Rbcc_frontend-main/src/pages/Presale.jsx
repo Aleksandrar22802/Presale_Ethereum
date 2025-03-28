@@ -175,7 +175,7 @@ function Presale() {
 
         console.log("remainingTimeResult - ", remainingTimeResult)
         if (remainingTimeResult[0].result != undefined) 
-            {
+        {
             setRemainingTime(getFormattedUnits(remainingTimeResult[0].result));
         } 
         else 
@@ -183,7 +183,7 @@ function Presale() {
             if (checkTime == true) {
                 setRemainingTime(0);
             } else {
-                setRemainingTime(60);
+                setRemainingTime(10);
             }
         }
     }, [remainingTimeResult])

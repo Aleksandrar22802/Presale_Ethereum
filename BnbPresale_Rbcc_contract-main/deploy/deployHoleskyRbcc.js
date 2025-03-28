@@ -1,14 +1,14 @@
 const { ethers, run, network } = require("hardhat");
 const { sleep } = require("sleep-ts");
 
-const verify = async (address, parameter = []) => {
-    console.log(`Veryfing ${address} ...`);
-    await run("verify:verify", {
-        address: address,
-        constructorArguments: parameter,
-    });
-    console.log("Success!");
-};
+// const verify = async (address, parameter = []) => {
+//     console.log(`Veryfing ${address} ...`);
+//     await run("verify:verify", {
+//         address: address,
+//         constructorArguments: parameter,
+//     });
+//     console.log("Success!");
+// };
 
 const main = async () => {
     // Get network data from Hardhat config (see hardhat.config.ts).
@@ -39,8 +39,8 @@ const main = async () => {
 };
 
 main()
-.then(() => process.exit(0))
-.catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });

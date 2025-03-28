@@ -55,7 +55,7 @@ contract HoleskyRbccPresale {
 
     /**
      */
-    constructor(address initialOwner, address stableToken, address mintToken, address mintTokenOwner) {
+    constructor(address initialOwner, address stableToken, address mintToken) {
         // check deploying wallet address is being null
         require(msg.sender != address(0), "Deploy from the zero address");
 
@@ -66,8 +66,6 @@ contract HoleskyRbccPresale {
         _usdtToken = IERC20(stableToken);
         _rbccToken = IERC20(mintToken);
 
-        _rbccToken.allowance(mintTokenOwner, address(this));
-        
         // Init Claim Time Range
         _startTime = 1742958000; // 2025.3.26:12.0.0
         _endTime = 1743130861; // 2025.3.28:12.0.0
@@ -83,7 +81,6 @@ contract HoleskyRbccPresale {
         _pricePerRbcc = 10; // 1rbcc = 10$
 
         _limitRbccForPresale = 10000;
-        _rbccToken.approve(address(this), _limitRbccForPresale * RBCC_DECIMAL);
 
         _maxRbccPerWallet = 10000 / _pricePerRbcc; // amount for 10000 $
         _minRbccPerWallet = 0 / _pricePerRbcc; // amount for 0 $
@@ -140,9 +137,6 @@ contract HoleskyRbccPresale {
         uint256 tokenAmount = (etherAmount * _pricePerEther) / ETHER_DECIMAL;
         tokenAmount = tokenAmount * RBCC_DECIMAL / _pricePerRbcc;
 
-        // Address.sendValue(payable(address(this)), etherAmount);
-        // Address.safeTransferFrom(msg.sender, address(this), etherAmount);
-
         _allocateRbcc(etherAmount, 0, tokenAmount);
     }
 
@@ -173,8 +167,6 @@ contract HoleskyRbccPresale {
             calcInvestmentRbcc >= _minRbccPerWallet && calcInvestmentRbcc <= _maxRbccPerWallet,
             "RbccPresale: The USDT is overflow for min~max range."
         );
-
-        // _usdtToken.safeTransferFrom(msg.sender, address(this), usdtAmount);
 
         uint256 tokenAmount = usdtAmount / USDT_DECIMAL;
         tokenAmount = tokenAmount * RBCC_DECIMAL / _pricePerRbcc;
@@ -226,15 +218,8 @@ contract HoleskyRbccPresale {
         // this value is in wei unit
         uint256 rbccAmount = _walletsRbccAmount[msg.sender];
         require(rbccAmount > 0, "You dont have any RBCC to claim");
-        /*
-        require(
-            _rbccToken.balanceOf(address(this)) >= rbccAmount,
-            "The RBCC amount on the contract is insufficient."
-        );
-        */
 
-        // _rbccToken.transfer(msg.sender, rbccAmount);
-        _rbccToken.transferFrom(address(this), msg.sender, rbccAmount);
+        _rbccToken.transferFrom(_owner, msg.sender, rbccAmount);
 
         _totalClaimed += rbccAmount;
 
