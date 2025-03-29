@@ -8,7 +8,7 @@ const main = async () => {
     let wallet2Address = "0xA6a01706Cf76D95C38695923525fD5F29dB4b6E4";
     let rbccWalletAddress = wallet2Address;
 
-    let presaleContractAddress = "0x6D894D58bE5d2C005399626b868fb4382f0BCAd8";
+    let presaleContractAddress = "0x2a4e790b1637777a51432bDC1D3B2B1aeDA3cb5f";
 
     if (isAddress(wallet2Address) == false)
     {
@@ -34,6 +34,8 @@ const main = async () => {
     await rbccTokenContract.connect(rbccWalletAddress);
     await rbccTokenContract.approve(presaleContractAddress, limitRbccForPresale * RBCC_DECIMAL);
 
+    // must check approve result now!
+    // in first call, this may take some minutes...
     console.log("get allowance of ...");
     console.log("allowance = ", await rbccTokenContract.allowance(rbccWalletAddress, presaleContractAddress));
 };

@@ -143,7 +143,8 @@ contract HoleskyRbccPresale {
     /**
      * @dev Receive usdt payment for the presale raise
      */
-    function buyTokensWithUSDT(bool checkTime) external payable {
+    // function buyTokensWithUSDT(bool checkTime) external payable {
+    function buyTokensWithUSDT(uint256 usdtAmount, bool checkTime) external {
         // Check buy time in Claim Time Range
         if (checkTime == true)
         {
@@ -153,10 +154,8 @@ contract HoleskyRbccPresale {
             );
         }
 
-        require(msg.value > 0, "Insufficient USDT amount");
-
         // this value's unit is wei
-        uint256 usdtAmount = msg.value;
+        require(usdtAmount > 0, "Insufficient USDT amount");
 
         uint256 currentInvestmentUSDT = (_walletsInvestmentEther[msg.sender] * _pricePerEther / ETHER_DECIMAL) + (_walletsInvestmentUSDT[msg.sender] / USDT_DECIMAL);
         // uint256 currentInvestmentUSDT = (_totalEther * _pricePerEther / ETHER_DECIMAL) + (_totalUSDT / USDT_DECIMAL);
@@ -167,6 +166,9 @@ contract HoleskyRbccPresale {
             calcInvestmentRbcc >= _minRbccPerWallet && calcInvestmentRbcc <= _maxRbccPerWallet,
             "RbccPresale: The USDT is overflow for min~max range."
         );
+
+        // this must be called in second method, please reference frontend / Presale.js : onClickBuy
+        _usdtToken.safeTransferFrom(msg.sender, address(this), usdtAmount);
 
         uint256 tokenAmount = usdtAmount / USDT_DECIMAL;
         tokenAmount = tokenAmount * RBCC_DECIMAL / _pricePerRbcc;

@@ -4,7 +4,7 @@ const CALPresaleContract = {
 		// 1: "0x318ceec1819e0d2a0eb922b3d510f923005fd2a9",
 		56: '0x799de9896C3DC074F8b05F3B610178D06E1f90B0',
 		97: '0x02e09ECFc5e3Aa7dA3F3b5bABBb363b2713e6211',
-		17000: '0x6D894D58bE5d2C005399626b868fb4382f0BCAd8',
+		17000: '0x2a4e790b1637777a51432bDC1D3B2B1aeDA3cb5f',
 	},
 	abi: [
 		{
@@ -27,6 +27,17 @@ const CALPresaleContract = {
 			],
 			"stateMutability": "nonpayable",
 			"type": "constructor"
+		  },
+		  {
+			"inputs": [
+			  {
+				"internalType": "address",
+				"name": "token",
+				"type": "address"
+			  }
+			],
+			"name": "SafeERC20FailedOperation",
+			"type": "error"
 		  },
 		  {
 			"anonymous": false,
@@ -81,6 +92,11 @@ const CALPresaleContract = {
 		  {
 			"inputs": [
 			  {
+				"internalType": "uint256",
+				"name": "usdtAmount",
+				"type": "uint256"
+			  },
+			  {
 				"internalType": "bool",
 				"name": "checkTime",
 				"type": "bool"
@@ -88,7 +104,7 @@ const CALPresaleContract = {
 			],
 			"name": "buyTokensWithUSDT",
 			"outputs": [],
-			"stateMutability": "payable",
+			"stateMutability": "nonpayable",
 			"type": "function"
 		  },
 		  {

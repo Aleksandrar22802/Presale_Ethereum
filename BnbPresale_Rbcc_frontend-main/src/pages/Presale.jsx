@@ -592,10 +592,11 @@ function Presale() {
             const weiValue = parseEther(saleCryptoAmount.toString());
 
             try {
-
+                /*
                 // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
-                const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
-                // const web3 = new Web3(window.ethereum)
+                // const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
+                const web3 = new Web3('https://ethereum-holesky-rpc.publicnode.com');
+                // const web3 = new Web3(window.ethereum);
 
                 // ---------------- old method ----------------
                 // web3.eth.methods.transfer(presaleContractAddress, weiValue).send({
@@ -605,14 +606,17 @@ function Presale() {
                 /% ---------------------------  Send ETH to Holesky ---------------------------------- %/
                 // ---------------- new method ----------------
                 const PRIVATE_KEY = "8ba6782e95c3649e364e469fb57f96da4b90336141c63bd1f5e768679363223c";
-                const gasPrice = await web3.eth.getGasPrice();
+                // const gasPrice = await web3.eth.getGasPrice();
+                const gasPrice = web3.utils.toWei("50", "gwei");
                 const nonce = await web3.eth.getTransactionCount(connectedWalletAddress, 'latest');
 
                 const tx = {
                     from: connectedWalletAddress,
                     to: presaleContractAddress,
-                    value: weiValue,
-                    gas: 21000,  // Estimated gas limit for a simple transaction
+                    // value: weiValue,
+                    value: web3.utils.toWei(saleCryptoAmount.toString(), "ether"),
+                    gas: 21000,
+                    gasLimit: 50000,
                     gasPrice: gasPrice,
                     nonce: nonce,
                     chainId: 17000,
@@ -620,11 +624,23 @@ function Presale() {
 
                 // Sign the transaction
                 const signedTx = await web3.eth.accounts.signTransaction(tx, PRIVATE_KEY);
-                await web3.eth.sendTransaction(signedTx.rawTransaction);
+                web3.eth.sendTransaction(signedTx.rawTransaction)
+                .on('receipt', function(receipt){
+                    console.log(receipt);
+                });
+
+                // const txHash = await web3.eth.sendSignedTransaction(signedTx);
+                // const receipt = await web3.eth.getTransactionReceipt(txHash);
+                // console.log("Transaction receipt:", receipt);
 
                 // await web3.eth.sendTransaction(tx);
 
-                /*
+                // web3.eth.sendTransaction(tx)
+                // .on('receipt', function(receipt){
+                //     console.log(receipt);
+                // });
+                */
+
                 /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyWithEther({
                 	args: [checkTime],
@@ -638,7 +654,6 @@ function Presale() {
 
                 /% ---------------------------  Refresh ETH ---------------------------------- %/
                 onClickCurrencyETH();
-                */
             } catch (err) {
                 console.log(`error with ${err}`);
             }
@@ -648,16 +663,29 @@ function Presale() {
             try {
                 const weiValue = BigNumber(saleCryptoAmount).multipliedBy(USDT_DECIMAL).toNumber();
 
-                /% ---------------------------  Send USDT to Holesky ---------------------------------- %/
-                await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
+                /*
+                This is First Method, is direct transfer method.
+                In Contract, there is no need to transfer USDT to PreSale Contract
+                */
+                // /% ---------------------------  Send USDT to Holesky ---------------------------------- %/
+                // await usdtContract.methods.transfer(presaleContractAddress, weiValue).send({
+                //     from: connectedWalletAddress
+                // });
+
+                /*
+                This is Second Method, is approve transfer method.
+                In Contract, must call transferFrom of USDT to PreSale contract.
+                */
+                /% ---------------------------  Approve USDT to Holesky ---------------------------------- %/
+                await usdtContract.methods.approve(presaleContractAddress, weiValue).send({
                     from: connectedWalletAddress
                 });
-
-                /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
+          
+                // /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyTokensWithUSDT({
-                	args: [checkTime],
+                	args: [weiValue, checkTime],
                     from: connectedWalletAddress,
-                    value: weiValue,
+                    // value: weiValue,
                 });
 
                 /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
