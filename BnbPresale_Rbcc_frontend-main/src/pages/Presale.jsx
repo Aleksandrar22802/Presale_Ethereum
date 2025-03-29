@@ -201,7 +201,7 @@ function Presale() {
             if (checkTime == true) {
                 setRemainingTime(0);
             } else {
-                setRemainingTime(60);
+                setRemainingTime(10);
             }
         }
     }, [remainingTimeResult])
@@ -433,6 +433,10 @@ function Presale() {
             // setTxHash(data.hash)
             setSaleCryptoAmount(0);
             setSaleCryptoBalance(0);
+
+            /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+            getAddressBoughtContractData.refetch();
+            getTotalSoldContractData.refetch();
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))
@@ -449,6 +453,10 @@ function Presale() {
             // setTxHash(data.hash)
             setSaleCryptoAmount(0);
             setSaleCryptoBalance(0);
+
+            /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+            getAddressBoughtContractData.refetch();
+            getTotalSoldContractData.refetch();
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))
@@ -465,6 +473,10 @@ function Presale() {
             // setTxHash(data.hash)
             setSaleCryptoAmount(0);
             setSaleCryptoBalance(0);
+
+            /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
+            getAddressBoughtContractData.refetch();
+            getTotalSoldContractData.refetch();
         },
         onError: (error) => {
             toast.error(getErrorMessage(error))
@@ -648,10 +660,6 @@ function Presale() {
                 	value: weiValue,
                 });
 
-                /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
-                getAddressBoughtContractData.refetch();
-                getTotalSoldContractData.refetch();
-
                 /% ---------------------------  Refresh ETH ---------------------------------- %/
                 onClickCurrencyETH();
             } catch (err) {
@@ -687,10 +695,6 @@ function Presale() {
                     from: connectedWalletAddress,
                     // value: weiValue,
                 });
-
-                /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
-                getAddressBoughtContractData.refetch();
-                getTotalSoldContractData.refetch();
         
                 /% ---------------------------  Refresh USDT ---------------------------------- %/
                 onClickCurrencyUSDT();
@@ -721,10 +725,6 @@ function Presale() {
                 args: [checkTime],
                 from: connectedWalletAddress,
             });
-
-            /% ---------------------------  Refresh from PreSale Contract ---------------------------------- %/
-            getAddressBoughtContractData.refetch();
-            getTotalSoldContractData.refetch();
 
         } catch (err) {
             console.log(`error with ${err}`);
