@@ -14,6 +14,7 @@ import Staking from './pages/Staking'
 import './App.css'
 import 'react-toastify/dist/ReactToastify.min.css'
 import Presale from './pages/Presale'
+import PresaleChild1 from './pages/PresaleChild1'
 
 function App() {
     const { authState } = useAuthState()
@@ -51,6 +52,7 @@ function App() {
                     🚀Join Remittix's 100x Moonshot ICO Today And Secure 30% Bonus when you use code: <strong>RTX30P</strong>
                 </marquee>                    
                 <Presale></Presale>
+                <PresaleChild1></PresaleChild1>
                 {/* <Routes> */}
                 {/* <Route path="/" element={<Presale />}></Route> */}
                 {/* <Route path="/" element={<Home />}></Route> */}
