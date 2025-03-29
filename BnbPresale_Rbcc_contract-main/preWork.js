@@ -31,7 +31,7 @@ const main = async () => {
     console.log("approve to presale contract ...");
     const RBCC_DECIMAL = 1e8;
     const limitRbccForPresale = 10000;
-    await rbccTokenContract.connect(rbccWalletAddress, signer);
+    await rbccTokenContract.connect(rbccWalletAddress);
     await rbccTokenContract.approve(presaleContractAddress, limitRbccForPresale * RBCC_DECIMAL);
 
     console.log("get allowance of ...");
