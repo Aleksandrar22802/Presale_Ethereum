@@ -58,8 +58,8 @@ function Presale() {
     useEffect(() => {
         setSaleCryptoAmount(0);
         setSaleCryptoBalance(0);
-        // setBuyRbccAmount(0)
-        buyRbccAmount.current = 0;
+        setBuyRbccAmount(0)
+        // buyRbccAmount.current = 0;
         if (saleCryptoType == CRYPTO_TYPE.ETH)
         {
             fetchEthereumBalance();
@@ -88,8 +88,8 @@ function Presale() {
     const usdtToken = "0xFdf8062Ad4D57F1539D122231A2b189cfc58a955";
     const usdtContract = new defaultWeb3.eth.Contract(USDTAbi, usdtToken);
 
-    // const [buyRbccAmount, setBuyRbccAmount] = useState(0);
-    const buyRbccAmount = useRef(0);
+    const [buyRbccAmount, setBuyRbccAmount] = useState(0);
+    // const buyRbccAmount = useRef(0);
 
     useEffect(() => {
         // console.log("saleCryptoAmount = " + saleCryptoAmount);
@@ -110,8 +110,8 @@ function Presale() {
         {
         }
         cryptoAmount = roundNumberBy1000(cryptoAmount);
-        // setBuyRbccAmount(cryptoAmount);
-        buyRbccAmount.current = cryptoAmount;
+        setBuyRbccAmount(cryptoAmount);
+        // buyRbccAmount.current = cryptoAmount;
     }, [saleCryptoAmount])
 
     // const [txHash, setTxHash] = useState(null)
@@ -201,7 +201,7 @@ function Presale() {
             if (checkTime == true) {
                 setRemainingTime(0);
             } else {
-                setRemainingTime(10);
+                setRemainingTime(60);
             }
         }
     }, [remainingTimeResult])
@@ -235,8 +235,8 @@ function Presale() {
         }
     }, [remainingTime])
 
-    // const [myBoughtAmount, setMyBoughtAmount] = useState(0);
-    const myBoughtAmount = useRef(0);
+    const [myBoughtAmount, setMyBoughtAmount] = useState(0);
+    // const myBoughtAmount = useRef(0);
 
     const [addressBoughtResult, setAddressBoughtResult] = useState(null);
     const getAddressBoughtContractData = useContractReads({
@@ -259,15 +259,15 @@ function Presale() {
     useEffect(() => {
         if (isConnectedWallet() == false)
         {
-            // setMyBoughtAmount(0);
-            myBoughtAmount.current = 0;
+            setMyBoughtAmount(0);
+            // myBoughtAmount.current = 0;
             return;
         }
 
         if (!addressBoughtResult || addressBoughtResult == undefined)
         {
-            // setMyBoughtAmount(0);
-            myBoughtAmount.current = 0;
+            setMyBoughtAmount(0);
+            // myBoughtAmount.current = 0;
             return;
         }
 
@@ -275,18 +275,18 @@ function Presale() {
         if (addressBoughtResult[0].result !== undefined) 
         {
             const rbccValue = BigNumber(addressBoughtResult[0].result).dividedBy(RBCC_DECIMAL).toNumber();
-            // setMyBoughtAmount(rbccValue);
-            myBoughtAmount.current = rbccValue;
+            setMyBoughtAmount(rbccValue);
+            // myBoughtAmount.current = rbccValue;
         } 
         else 
         {
-            // setMyBoughtAmount(0);
-            myBoughtAmount.current = 0;
+            setMyBoughtAmount(0);
+            // myBoughtAmount.current = 0;
         }
     }, [addressBoughtResult]);
 
-    // const [totalBoughtAmount, setTotalBoughtAmount] = useState(0);
-    const totalBoughtAmount = useRef(0);
+    const [totalBoughtAmount, setTotalBoughtAmount] = useState(0);
+    // const totalBoughtAmount = useRef(0);
 
     const [totalBoughtResult, setTotalBoughtResult] = useState(null);
     const getTotalSoldContractData = useContractReads({
@@ -309,15 +309,15 @@ function Presale() {
     useEffect(() => {
         if (isConnectedWallet() == false)
         {
-            // setTotalBoughtAmount(0);
-            totalBoughtAmount.current = 0;
+            setTotalBoughtAmount(0);
+            // totalBoughtAmount.current = 0;
             return;
         }
 
         if (!totalBoughtResult || totalBoughtResult == undefined)
         {
-            // setTotalBoughtAmount(0);
-            totalBoughtAmount.current = 0;
+            setTotalBoughtAmount(0);
+            // totalBoughtAmount.current = 0;
             return;
         }
 
@@ -325,13 +325,13 @@ function Presale() {
         if (totalBoughtResult[0].result !== undefined) 
         {
             const rbccValue = BigNumber(totalBoughtResult[0].result).dividedBy(RBCC_DECIMAL).toNumber();
-            // setTotalBoughtAmount(rbccValue);
-            totalBoughtAmount.current = rbccValue;
+            setTotalBoughtAmount(rbccValue);
+            // totalBoughtAmount.current = rbccValue;
         } 
         else 
         {
-            // setTotalBoughtAmount(0);
-            totalBoughtAmount.current = 0;
+            setTotalBoughtAmount(0);
+            // totalBoughtAmount.current = 0;
         }
     }, [totalBoughtResult]);
 
@@ -562,13 +562,13 @@ function Presale() {
     }
 
     const getPreSaleAbleAmount = () => {
-        // return (limitForPresale - totalBoughtAmount);
-        return (limitForPresale - totalBoughtAmount.current);
+        return (limitForPresale - totalBoughtAmount);
+        // return (limitForPresale - totalBoughtAmount.current);
     }
 
     const getMyTokensInfo = () => {
-        // return myBoughtAmount + "(" + minRbccPerWallet + "~" + maxRbccPerWallet + ")";
-        return myBoughtAmount.current + "(" + minRbccPerWallet + "~" + maxRbccPerWallet + ")";
+        return myBoughtAmount + "(" + minRbccPerWallet + "~" + maxRbccPerWallet + ")";
+        // return myBoughtAmount.current + "(" + minRbccPerWallet + "~" + maxRbccPerWallet + ")";
     }
 
     const getPayMethodInfo = () => {
@@ -593,7 +593,6 @@ function Presale() {
 
             try {
 
-                /*
                 // const web3 = new Web3(new Web3.providers.HttpProvider('https://ethereum-holesky-rpc.publicnode.com'));
                 const web3 = new Web3(new Web3('https://ethereum-holesky-rpc.publicnode.com'));
                 // const web3 = new Web3(window.ethereum)
@@ -624,8 +623,8 @@ function Presale() {
                 await web3.eth.sendTransaction(signedTx.rawTransaction);
 
                 // await web3.eth.sendTransaction(tx);
-                */
 
+                /*
                 /% ---------------------------  Send to PreSale Contract ---------------------------------- %/
                 buyWithEther({
                 	args: [checkTime],
@@ -639,6 +638,7 @@ function Presale() {
 
                 /% ---------------------------  Refresh ETH ---------------------------------- %/
                 onClickCurrencyETH();
+                */
             } catch (err) {
                 console.log(`error with ${err}`);
             }
@@ -755,13 +755,13 @@ function Presale() {
                         <div className="mint_content">
                             <div className="mint_title">
                                 {
-                                    (counterDeadline > 0 || myBoughtAmount.current > 0) ? 
+                                    (counterDeadline > 0 || myBoughtAmount > 0) ? 
                                         <span>Buy Now ...</span>
                                         :
                                         <span>Presale Ended ...</span>
                                 }
                                 {
-                                    (counterDeadline > 0 || myBoughtAmount.current > 0) ? 
+                                    (counterDeadline > 0 || myBoughtAmount > 0) ? 
                                         <img src={IconMint} />
                                         :
                                         <img src={IconBoost} />
@@ -851,8 +851,8 @@ function Presale() {
                                                 Rbcc you receive
                                             </span>
                                             <div className="content">
-                                                {/* <span>{buyRbccAmount}</span> */}
-                                                <span>{buyRbccAmount.current}</span>
+                                                <span>{buyRbccAmount}</span>
+                                                {/* <span>{buyRbccAmount.current}</span> */}
                                                 <img src={IconRemit} />
                                             </div>
                                             <img id="mint_currency_receive_icon" src={IconEther1} />
@@ -862,7 +862,7 @@ function Presale() {
                                     ""
                             }
                             {
-                                (isConnectedWallet() == true && (counterDeadline > 0 || myBoughtAmount.current > 0)) ?
+                                (isConnectedWallet() == true && (counterDeadline > 0 || myBoughtAmount > 0)) ?
                                     <div className="mint_currency_action">
                                         {
                                             counterDeadline > 0 ? 
@@ -875,7 +875,7 @@ function Presale() {
                                                 ""
                                         }
                                         {
-                                            (counterDeadline <= 0 && myBoughtAmount.current > 0) ? 
+                                            (counterDeadline <= 0 && myBoughtAmount > 0) ? 
                                                 <button 
                                                     onClick={onClickClaim}
                                                 >
